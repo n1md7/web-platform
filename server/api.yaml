@@ -1,0 +1,90 @@
+swagger: "2.0"
+info:
+  title: "Swagger API documentation"
+  description: >
+    This is an example Koa API.
+  version: "1.0.0"
+host: "localhost:8080"
+schemes:
+  - "http"
+
+paths:
+  /api/v1/user/auth:
+    post:
+      summary: "Authentication request"
+      description: "Authenticates user based on username and password"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Username and password to authenticate"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: "string"
+                example: "username@email.com"
+              password:
+                type: "string"
+                example: "secret"
+
+      responses:
+        200:
+          description: "Credentials are correct"
+          schema:
+            type: "string"
+        401:
+          description: "Wrong credentials"
+        400:
+          description: "Bad request happened"
+  /health-check:
+    get:
+      summary: "Check the status of the service"
+      description: "If the service is up and running correctly the response will be 'UP'"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Service is up and healthy"
+          schema:
+            $ref: "#/definitions/Health"
+        500:
+          $ref: '#/responses/500'
+
+responses:
+  500:
+    description: Internal Server Error
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  Health:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        enum:
+          - "UP"
+          - "DOWN"
+      version:
+        type: "string"
+  Error:
+    type: "object"
+    properties:
+      data:
+        type: "object"
+        properties:
+          error:
+            type: "string"
+
+
+

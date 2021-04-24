@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  mongo:
+    container_name: mongo-db-koa
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: koa
+    ports:
+      - 27027:27017
+    volumes:
+      - "./server/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
+      - "mongo-data:/data/db"
+    networks:
+      - mongo-net
+  mongo-express:
+    container_name: mongo-express-koa
+    depends_on:
+      - mongo
+    image: mongo-express
+    restart: unless-stopped
+    ports:
+      - 8800:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: secret
+    networks:
+      - mongo-net
+  mysql:
+    container_name: mysql-koa
+    image: 'mysql:8.0'
+    restart: unless-stopped
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - 'mysql-data:/var/lib/mysql'
+    networks:
+      - mysql-net
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-koa
+    restart: unless-stopped
+    networks:
+      - mysql-net
+    ports:
+      - '8900:80'
+    environment:
+      PMA_HOST: mysql
+networks:
+  mongo-net:
+    driver: bridge
+  mysql-net:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
+  mysql-data:
+    driver: local
