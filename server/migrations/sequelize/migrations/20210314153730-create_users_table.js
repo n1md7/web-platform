@@ -14,11 +14,27 @@ module.exports = {
                 primaryKey: true,
                 autoIncrement: true
             },
-            username: Sequelize.STRING(32),
-            password: Sequelize.STRING(512),
-            email: Sequelize.STRING(128),
-            role: Sequelize.INTEGER(2),
-            active: Sequelize.INTEGER(1),
+            email: {
+                type: Sequelize.STRING(128),
+                allowNull: false
+            },
+            password: {
+                type: Sequelize.STRING(512),
+                allowNull: false
+            },
+            firstName: Sequelize.STRING(32),
+            middleName: Sequelize.STRING(32),
+            lastName: Sequelize.STRING(32),
+            organization: Sequelize.STRING(128),
+            dateOfBirth: Sequelize.DATE(),
+            role: {
+                type: Sequelize.STRING(64),
+                allowNull: false
+            },
+            status: {
+                type: Sequelize.STRING(64),
+                allowNull: false
+            },
             createdAt: {
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -31,6 +47,9 @@ module.exports = {
             charset: 'utf8',
             collate: 'utf8_general_ci'
         });
+
+        // Add index BTREE to E-mail field
+        await queryInterface.addIndex('users', ['email']);
     },
 
     down: async (queryInterface, Sequelize) => {

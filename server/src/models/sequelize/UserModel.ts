@@ -1,88 +1,88 @@
-import BaseModelSequelize from '../BaseModelSequelize';
-import model, {tableName} from '../../database/sequelize/schema/User';
 import StringUtils from '../../helpers/StringUtils';
-import {Op} from 'sequelize';
+import Sequelize, {Op} from 'sequelize';
+import sequelize from "../../database/sequelize/Sequelize";
+import {RequestAuthType, RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
 
-export type RequestAuthType = {
-    username: string;
-    password: string;
-};
+export default class UserModel {
 
-export type RequestUserType = {
-    confirmPassword: string;
-    email: string;
-} & RequestAuthType;
+  protected model;
+  protected tableName;
 
-export type UserType = {
-    id: number;
-    username: string;
-    password: string;
-    email: string;
-    role: number;
-    active: number;
-    createdAt: Date;
-    updatedAt: Date;
-};
+  constructor() {
+    this.tableName = 'users';
+    this.model = sequelize.define(this.tableName, {
+      id: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      email: {
+        type: Sequelize.STRING(128),
+        allowNull: false
+      },
+      password: {
+        type: Sequelize.STRING(512),
+        allowNull: false
+      },
+      firstName: Sequelize.STRING(32),
+      middleName: Sequelize.STRING(32),
+      lastName: Sequelize.STRING(32),
+      organization: Sequelize.STRING(128),
+      dateOfBirth: Sequelize.DATE(),
+      role: {
+        type: Sequelize.STRING(64),
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.STRING(64),
+        allowNull: false
+      }
+    }, {
+      tableName: this.tableName,
+      timestamps: true
+    });
+  }
 
-export enum UserRole {
-    basic = 1,
-    admin,
-}
+  public async addNewUser(requestParam: RequestUserType): Promise<UserType> {
+    const resultRow = await this.model.findOne({
+      where: {
+        [Op.or]: [
+          {email: requestParam.email}
+        ]
+      }
+    });
 
-export enum UserStatus {
-    active = 1,
-    disabled,
-    blocked
-}
-
-export default class UserModel extends BaseModelSequelize<typeof model> {
-
-    constructor() {
-        super(model, tableName);
+    if (resultRow) {
+      throw new Error(`such username/email already taken`);
     }
 
-    public async addNewUser(requestParam: RequestUserType): Promise<UserType> {
-        const resultRow = await this.model.findOne({
-            where: {
-                [Op.or]: [
-                    {username: requestParam.username},
-                    {email: requestParam.email}
-                ]
-            }
-        });
+    const passwordHash = await StringUtils.hashPassword(requestParam.password);
+    return await this.model.create({
+      email: requestParam.email,
+      password: passwordHash,
+      role: UserRole.basic,
+      active: UserStatus.active
+    });
+  }
 
-        if (resultRow) {
-            throw new Error(`such username/email already taken`);
-        }
+  public async credentialsAreValid(requestParam: RequestAuthType): Promise<boolean | UserType> {
+    const resultRow = await this.model.findOne({
+      where: {
+        email: requestParam.email,
+      }
+    });
+    // No such user record in the Database
+    if (!resultRow) {
+      return false;
+    }
+    const user = resultRow.dataValues as UserType;
+    const hash = user.password;
+    const isValid = await StringUtils.hashCompare(requestParam.password, hash);
 
-        const passwordHash = await StringUtils.hashPassword(requestParam.password);
-        return await this.model.create({
-            username: requestParam.username,
-            password: passwordHash,
-            email: requestParam.email,
-            role: UserRole.basic,
-            active: UserStatus.active
-        });
+    if (!isValid) {
+      return false;
     }
 
-    public async credentialsAreValid(requestParam: RequestAuthType): Promise<boolean | UserType> {
-        const resultRow = await this.model.findOne({
-            where: {
-                username: requestParam.username,
-            }
-        });
-        // No such user record in the Database
-        if (!resultRow) {
-            return false;
-        }
-        const user = resultRow.dataValues as UserType;
-        const hash = user.password;
-        const isValid = await StringUtils.hashCompare(requestParam.password, hash);
-
-        if (!isValid) {
-            return false;
-        }
-
-        return user;
-    }
+    return user;
+  }
 }

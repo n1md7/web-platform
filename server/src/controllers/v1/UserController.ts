@@ -1,8 +1,7 @@
 import BaseController from './BaseController';
 import {Context} from 'koa';
 import UserInterface from "./UserInterface";
-import UserModel from "../../models/mongo/UserModel";
-import UserModelSequelize, {UserType} from "../../models/sequelize/UserModel";
+import UserModel from "../../models/sequelize/UserModel";
 import {authUserSchema, createUserSchema} from './validators/UserRequestValidator';
 import {HttpCode} from '../../types/errorHandler';
 import JsonWebToken from 'jsonwebtoken';
@@ -10,6 +9,7 @@ import {MyContext} from '../../types/koa';
 import Joi from 'joi';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
+import {UserRole, UserType} from "../../types/user";
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,
@@ -22,7 +22,7 @@ const rememberMeTokens = new NodeCache({
 });
 
 export type JwtPayload = {
-  username: string;
+  role: UserRole;
   email: string;
   userId: number;
   iat?: number;
@@ -55,14 +55,9 @@ class UserController extends BaseController implements UserInterface {
   public async refreshToken(ctx: MyContext): Promise<void> {
     ctx.body = UserController.generateNewJWT({
       userId: ctx.store.userId,
-      username: ctx.store.username,
+      role: ctx.store.role,
       email: ctx.store.email
     });
-  }
-
-  public async users(ctx: Context): Promise<void> {
-    const model = new UserModel();
-    ctx.body = await model.getAllUsers();
   }
 
   // User registration
@@ -74,7 +69,7 @@ class UserController extends BaseController implements UserInterface {
     if (validation.value.password !== validation.value.confirmPassword) {
       throw new Error("'password' and 'confirmPassword' didn't match!");
     }
-    const model = new UserModelSequelize();
+    const model = new UserModel();
     await model.addNewUser(validation.value);
 
     ctx.status = HttpCode.created;
@@ -85,7 +80,7 @@ class UserController extends BaseController implements UserInterface {
    * @param {object} ctx - Koa context
    * @param {object} ctx.request - Koa request
    * @param {object} ctx.params.body - Koa request body
-   * @param {string} ctx.params.body.username - username value
+   * @param {string} ctx.params.body.email - email value
    * @param {string} ctx.params.body.password - password value
    * @param {boolean} ctx.params.body.rememberMe - rememberMe state
    */
@@ -94,7 +89,7 @@ class UserController extends BaseController implements UserInterface {
     if (validation.error as Joi.ValidationError) {
       throw new Error(validation.error.details.pop().message);
     }
-    const model = new UserModelSequelize();
+    const model = new UserModel();
     const user = await model.credentialsAreValid(validation.value) as UserType;
     if (!user) {
       return ctx.status = HttpCode.unauthorized;
@@ -102,7 +97,7 @@ class UserController extends BaseController implements UserInterface {
     const refreshToken = validation.value?.rememberMe ? UserController.generateRefreshTokenString() : '';
     const payload = {
       userId: user.id,
-      username: user.username,
+      role: user.role,
       email: user.email
     };
     // Generate JsonWebToke for authentication
@@ -144,7 +139,7 @@ class UserController extends BaseController implements UserInterface {
     ctx.body = {
       jwt: UserController.generateNewJWT({
         userId: restoredUser.userId,
-        username: restoredUser.username,
+        role: restoredUser.role,
         email: restoredUser.email
       }),
       refreshToken: newRefreshToken
