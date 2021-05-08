@@ -1,7 +1,8 @@
+import {Op} from "sequelize";
+import UserService from "../../services/UserService";
 import BaseController from './BaseController';
 import {Context} from 'koa';
 import UserInterface from "./UserInterface";
-import UserModel from "../../models/sequelize/UserModel";
 import {authUserSchema, createUserSchema} from './validators/UserRequestValidator';
 import {HttpCode} from '../../types/errorHandler';
 import JsonWebToken from 'jsonwebtoken';
@@ -9,7 +10,9 @@ import {MyContext} from '../../types/koa';
 import Joi from 'joi';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
-import {UserRole, UserType} from "../../types/user";
+import {RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
+import UserModel from "../../models/UserModel";
+import UserInfoModel from "../../models/UserInfoModel";
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,
@@ -60,7 +63,7 @@ class UserController extends BaseController implements UserInterface {
     });
   }
 
-  // User registration
+  // UserModel registration
   public async createNewUser(ctx: Context): Promise<void> {
     const validation = createUserSchema.validate(ctx.request.body);
     if (validation.error as Joi.ValidationError) {
@@ -69,8 +72,28 @@ class UserController extends BaseController implements UserInterface {
     if (validation.value.password !== validation.value.confirmPassword) {
       throw new Error("'password' and 'confirmPassword' didn't match!");
     }
-    const model = new UserModel();
-    await model.addNewUser(validation.value);
+
+    const requestParam = validation.value as RequestUserType;
+    const resultRow = await UserModel.findOne({
+      where: {
+        [Op.or]: [
+          {email: requestParam.email}
+        ]
+      }
+    });
+
+    if (resultRow) {
+      throw new Error(`such username/email already taken`);
+    }
+
+    const passwordHash = await StringUtils.hashPassword(requestParam.password);
+
+    await UserModel.create({
+      email: requestParam.email,
+      password: passwordHash,
+      role: UserRole.basic,
+      status: UserStatus.active
+    });
 
     ctx.status = HttpCode.created;
   }
@@ -89,8 +112,7 @@ class UserController extends BaseController implements UserInterface {
     if (validation.error as Joi.ValidationError) {
       throw new Error(validation.error.details.pop().message);
     }
-    const model = new UserModel();
-    const user = await model.credentialsAreValid(validation.value) as UserType;
+    const user = await UserService.credentialsAreValid(validation.value) as UserType;
     if (!user) {
       return ctx.status = HttpCode.unauthorized;
     }

@@ -2,25 +2,11 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
-    await queryInterface.createTable('assessmentAnswers', {
+    await queryInterface.createTable('answers', {
       id: {
         type: Sequelize.BIGINT,
         primaryKey: true,
         autoIncrement: true
-      },
-      assessmentId: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false
-      },
-      questionGroupId: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false
       },
       questionId: {
         type: Sequelize.INTEGER(11),
@@ -46,15 +32,11 @@ module.exports = {
       charset: 'utf8',
       collate: 'utf8_general_ci'
     });
+
+    await queryInterface.addIndex('answers', ['questionId']);
   },
 
-  down: async (queryInterface, Sequelize) => {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
-    await queryInterface.dropTable('assessmentAnswers');
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('answers');
   }
 };

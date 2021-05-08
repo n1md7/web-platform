@@ -2,28 +2,21 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('assessments', {
+    await queryInterface.createTable('userInfo', {
       id: {
         type: Sequelize.BIGINT,
         primaryKey: true,
         autoIncrement: true
       },
-      templateId: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false
-      },
       userId: {
         type: Sequelize.INTEGER(11),
         allowNull: false
       },
-      name: {
-        type: Sequelize.STRING(512),
-        allowNull: false
-      },
-      status: {
-        type: Sequelize.STRING(64),
-        allowNull: false
-      },
+      firstName: Sequelize.STRING(32),
+      middleName: Sequelize.STRING(32),
+      lastName: Sequelize.STRING(32),
+      organization: Sequelize.STRING(128),
+      dateOfBirth: Sequelize.DATE,
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -37,16 +30,10 @@ module.exports = {
       collate: 'utf8_general_ci'
     });
 
-    await queryInterface.addIndex('assessments', ['templateId', 'userId']);
+    await queryInterface.addIndex('userInfo', ['userId']);
   },
 
-  down: async (queryInterface, Sequelize) => {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('assessments');
-     */
-    await queryInterface.dropTable('assessments');
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('userInfo');
   }
 };

@@ -14,6 +14,10 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true
       },
+      groupId: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+      },
       text: {
         type: Sequelize.STRING,
         allowNull: false
@@ -34,6 +38,8 @@ module.exports = {
       charset: 'utf8',
       collate: 'utf8_general_ci'
     });
+
+    await queryInterface.addIndex('templateQuestions', ['groupId']);
   },
 
   down: async (queryInterface, Sequelize) => {

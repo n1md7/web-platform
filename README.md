@@ -30,3 +30,7 @@ npm run dev --prefix ./server
 npm run start --prefix ./app
 
 ```
+
+
+Database schema
+![img_1.png](img_1.png)

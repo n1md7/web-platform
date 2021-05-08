@@ -22,11 +22,6 @@ module.exports = {
                 type: Sequelize.STRING(512),
                 allowNull: false
             },
-            firstName: Sequelize.STRING(32),
-            middleName: Sequelize.STRING(32),
-            lastName: Sequelize.STRING(32),
-            organization: Sequelize.STRING(128),
-            dateOfBirth: Sequelize.DATE(),
             role: {
                 type: Sequelize.STRING(64),
                 allowNull: false

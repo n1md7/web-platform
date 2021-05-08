@@ -9,10 +9,10 @@ schemes:
   - "http"
 
 paths:
-  /api/v1/user/auth:
+  /api/v1/user/new:
     post:
-      summary: "Authentication request"
-      description: "Authenticates user based on username and password"
+      summary: "UserModel registration"
+      description: "Creates new user"
       consumes:
         - "application/json"
       produces:
@@ -20,20 +20,62 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "Username and password to authenticate"
           required: true
           schema:
             type: "object"
             required:
-              - username
+              - email
+              - password
+              - confirmPassword
+              - role
+            properties:
+              email:
+                type: "string"
+                example: "username@email.com"
+              role:
+                type: "string"
+                example: "user"
+              password:
+                type: "string"
+                example: "secret123"
+              confirmPassword:
+                type: "string"
+                example: "secret123"
+      responses:
+        200:
+          description: "Registration is successful"
+          schema:
+            type: "string"
+        400:
+          description: "Bad request happened"
+  /api/v1/user/auth:
+    post:
+      summary: "Authentication request"
+      description: "Authenticates user based on email and password"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "E-mail and password to authenticate"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - email
               - password
             properties:
-              username:
+              email:
                 type: "string"
                 example: "username@email.com"
               password:
                 type: "string"
-                example: "secret"
+                example: "secret123"
+              rememberMe:
+                type: "boolean"
+                example: false
 
       responses:
         200:

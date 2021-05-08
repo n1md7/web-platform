@@ -97,7 +97,7 @@ export default class Server {
 
     return this.httpServer.listen(port, hostname, () => {
       logWrite.debug(`Health-check - http://${hostname}:${port}/health-check`);
-      logWrite.debug(`Swagger UI - http://${hostname}:${port}/${swaggerContextPath}`);
+      logWrite.debug(`Swagger UI - http://${hostname}:${port}${swaggerContextPath}`);
       logWrite.debug('Server (re)started!');
     });
   }
