@@ -1,31 +1,39 @@
-import {Model} from "sequelize-typescript";
 import StringUtils from "../helpers/StringUtils";
 import UserModel from "../models/UserModel";
 import {RequestAuthType, UserType} from "../types/user";
 
 export default class UserService {
-  public static async credentialsAreValid(requestParam: RequestAuthType): Promise<boolean | UserType> {
-    const resultRow = await UserModel.findOne({
+  /**
+   * @summary Accepts {RequestAuthType} and validates user credentials
+   * @param requestParam
+   * @returns null or user object
+   */
+  public static async credentialsAreValid(requestParam: RequestAuthType): Promise<null | UserType> {
+    const user = await UserModel.findOne({
       where: {
         email: requestParam.email,
       }
     });
     // No such user record in the Database
-    if (!resultRow) {
-      return false;
+    if (!user.email) {
+      return null;
     }
 
-    console.log(resultRow);
-    console.log(Object.keys(resultRow))
-    console.log(resultRow.getDataValue('results') as UserType)
-    // const user = resultRow.dataValues as UserType;
-    // const hash = user.password;
-    // const isValid = await StringUtils.hashCompare(requestParam.password, hash);
-    //
-    // if (!isValid) {
-    //   return false;
-    // }
-    //
-    // return user;
+    const hash = user.password;
+    const isValid = await StringUtils.hashCompare(requestParam.password, hash);
+
+    if (!isValid) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      password: user.password,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
   }
 }

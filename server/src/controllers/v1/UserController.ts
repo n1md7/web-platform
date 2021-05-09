@@ -12,7 +12,6 @@ import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
 import {RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
 import UserModel from "../../models/UserModel";
-import UserInfoModel from "../../models/UserInfoModel";
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,

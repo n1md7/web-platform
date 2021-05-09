@@ -5,27 +5,25 @@ import {
   HasOne,
   PrimaryKey, HasMany, DataType,
 } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
+import {Optional} from 'sequelize';
+import {UserRole, UserStatus} from "../types/user";
 import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
-//
-// interface UserAttributes {
-//   id: number;
-//   email: string;
-//   password: string;
-//   role: string;
-//   status: string;
-// }
-//
-// type UserCreationAttributes = Optional<UserAttributes, 'id'>
-//
+
+
+export type UserAttributes = {
+  id: number;
+  email: string;
+  password: string;
+  role: string;
+  status: string;
+}
 
 @Table({
   tableName: 'users',
   timestamps: true
 })
-export default class UserModel extends Model<UserModel> {
-// export default class UserModel extends Model<UserAttributes, UserCreationAttributes> {
+export default class UserModel extends Model<UserAttributes, Optional<UserAttributes, 'id'>> {
   @PrimaryKey
   @Column
   id: number;
@@ -37,10 +35,10 @@ export default class UserModel extends Model<UserModel> {
   password: string;
 
   @Column
-  role: string;
+  role: UserRole;
 
   @Column
-  status: string;
+  status: UserStatus;
 
   @HasOne(() => UserInfoModel)
   userInfo?: UserInfoModel
