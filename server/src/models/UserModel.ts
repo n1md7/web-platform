@@ -3,7 +3,7 @@ import {
   Column,
   Model,
   HasOne,
-  PrimaryKey, HasMany, DataType,
+  PrimaryKey, HasMany, DataType, AutoIncrement,
 } from 'sequelize-typescript';
 import {Optional} from 'sequelize';
 import {UserRole, UserStatus} from "../types/user";
@@ -25,6 +25,7 @@ export type UserAttributes = {
 })
 export default class UserModel extends Model<UserAttributes, Optional<UserAttributes, 'id'>> {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id: number;
 

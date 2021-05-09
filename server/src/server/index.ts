@@ -96,8 +96,8 @@ export default class Server {
     const {port, hostname, swaggerContextPath} = this.config.server;
 
     return this.httpServer.listen(port, hostname, () => {
-      logWrite.debug(`Health-check - http://${hostname}:${port}/health-check`);
-      logWrite.debug(`Swagger UI - http://${hostname}:${port}${swaggerContextPath}`);
+      logWrite.debug(`Health-check - http://localhost:${port}/health-check`);
+      logWrite.debug(`Swagger UI - http://localhost:${port}${swaggerContextPath}`);
       logWrite.debug('Server (re)started!');
     });
   }

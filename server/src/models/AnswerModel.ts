@@ -4,6 +4,7 @@ import {
   Model,
   PrimaryKey,
   ForeignKey,
+  AutoIncrement,
 } from 'sequelize-typescript';
 import QuestionModel from "./QuestionModel";
 
@@ -13,6 +14,7 @@ import QuestionModel from "./QuestionModel";
 })
 export default class AnswerModel extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id!: number;
 
