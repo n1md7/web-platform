@@ -1,50 +1,28 @@
-import {Context, Next} from "koa";
-import {
-  ErrorType,
-  HttpText,
-  HttpCode,
-  MongoErrorType,
-  MongoErrorCode,
-  ExceptionType,
-} from "../types/errorHandler";
 import {ValidationErrorItem} from 'joi';
+import {Context, Next} from "koa";
+import {ErrorType, ExceptionType, HttpCode, HttpText,} from "../types/errorHandler";
 
+interface MyError extends Error {
+  details?: ValidationErrorItem,
+  status?: number,
+  expose?: boolean
+}
 
 class ErrorHandler {
   static async handle(ctx: Context, next: Next): Promise<void> {
     await next().catch(error => {
-      if (error.name === ErrorType.mongoError) {
-        return ErrorHandler.handleMongoExceptions(error, ctx);
-      }
       ErrorHandler.handleEverythingElse(error, ctx);
     });
   }
 
-  private static buildErrorMessage(error: Error & { details?: ValidationErrorItem }, ctx: Context) {
-    const status: number = ctx.status || HttpCode.internalServerError;
+  private static buildErrorMessage(error: MyError, ctx: Context) {
+    const status: number = error.status || ctx.status || HttpCode.internalServerError;
     const errorMessage: string = error.message || error.details?.toString() || HttpText.internalServerError;
 
-    return `[${error.name}]:[${status} - ${errorMessage}]`;
+    return `[${error.name}:${status}] - [${errorMessage}]`;
   }
 
-  private static handleMongoExceptions(error: MongoErrorType, ctx: Context) {
-    const {message, code, keyValue} = error;
-    switch (code) {
-      case MongoErrorCode.duplicateKey:
-        // eslint-disable-next-line no-case-declarations
-        const [key, value] = Object.entries(keyValue).shift();
-        ctx.status = HttpCode.badRequest;
-        ctx.body = `Value "${value}" for "${key}" field is already taken`;
-        break;
-      default:
-        ctx.status = HttpCode.badRequest;
-        ctx.body = message;
-    }
-
-    ctx.app.emit('error:server', `[${ErrorType.mongoError}]:[${HttpCode.badRequest} - ${message}]`);
-  }
-
-  private static handleEverythingElse(error: Error & { details?: ValidationErrorItem }, ctx: Context) {
+  private static handleEverythingElse(error: MyError, ctx: Context) {
 
     switch (error.name) {
       case ExceptionType.validationErrorException:
@@ -69,6 +47,11 @@ class ErrorHandler {
       default:
         ctx.status = HttpCode.internalServerError;
         ctx.body = HttpText.internalServerError;
+    }
+
+    if (error.status > 0) {
+      ctx.status = error.status;
+      ctx.body = error.message;
     }
 
     ctx.app.emit('error:server', ErrorHandler.buildErrorMessage(error, ctx));

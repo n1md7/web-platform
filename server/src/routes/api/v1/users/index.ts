@@ -4,7 +4,6 @@ import authValidator from '../../../../middlewares/authValidator';
 
 const userRouter = new Router();
 
-userRouter.get('/user', authValidator, UserController.user);
 userRouter.get('/user/status', authValidator, UserController.status);
 userRouter.get('/user/token/refresh', authValidator, UserController.refreshToken);
 userRouter.get('/user/token/restore/:key', UserController.restoreExpiredToken);

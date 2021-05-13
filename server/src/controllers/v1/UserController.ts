@@ -1,17 +1,14 @@
-import {Op} from "sequelize";
-import UserService from "../../services/UserService";
-import BaseController from './BaseController';
-import {Context} from 'koa';
-import UserInterface from "./UserInterface";
-import {authUserSchema, createUserSchema} from './validators/UserRequestValidator';
-import {HttpCode} from '../../types/errorHandler';
-import JsonWebToken from 'jsonwebtoken';
-import {MyContext} from '../../types/koa';
 import Joi from 'joi';
+import JsonWebToken from 'jsonwebtoken';
+import {Context} from 'koa';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
-import {RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
 import UserModel from "../../models/UserModel";
+import UserService from "../../services/UserService";
+import {HttpCode} from '../../types/errorHandler';
+import {MyContext} from '../../types/koa';
+import {RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
+import {authUserSchema, createUserSchema} from './validators/UserRequestValidator';
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,
@@ -31,7 +28,7 @@ export type JwtPayload = {
   exp?: number;
 };
 
-class UserController extends BaseController implements UserInterface {
+class UserController {
   private static generateNewJWT(payload: JwtPayload): string {
 
     return JsonWebToken.sign(
@@ -43,8 +40,8 @@ class UserController extends BaseController implements UserInterface {
     );
   }
 
-  public async user(ctx: Context): Promise<void> {
-    ctx.body = 'ups...';
+  private static generateRefreshTokenString(): string {
+    return StringUtils.randomChars(128);
   }
 
   // Provide user JWT expiration status
@@ -62,27 +59,35 @@ class UserController extends BaseController implements UserInterface {
     });
   }
 
-  // UserModel registration
+  /**
+   * @summary User registration
+   * @param {object} ctx - Koa context
+   * @param {object} ctx.request - Koa request
+   * @param {object} ctx.params.body - Koa request body
+   * @param {string} ctx.params.body.email - email value
+   * @param {string} ctx.params.body.role - user role value
+   * @param {string} ctx.params.body.password - password value
+   * @param {string} ctx.params.body.confirmPassword - confirmation password value
+   * @returns void
+   */
   public async createNewUser(ctx: Context): Promise<void> {
     const validation = createUserSchema.validate(ctx.request.body);
     if (validation.error as Joi.ValidationError) {
-      throw new Error(validation.error.details.pop().message);
+      ctx.throw(HttpCode.badRequest, validation.error.details.pop().message);
     }
     if (validation.value.password !== validation.value.confirmPassword) {
-      throw new Error("'password' and 'confirmPassword' didn't match!");
+      ctx.throw(HttpCode.badRequest, "'password' and 'confirmPassword' didn't match!");
     }
 
     const requestParam = validation.value as RequestUserType;
     const resultRow = await UserModel.findOne({
       where: {
-        [Op.or]: [
-          {email: requestParam.email}
-        ]
+        email: requestParam.email
       }
     });
 
     if (resultRow) {
-      throw new Error(`such username/email already taken`);
+      ctx.throw(HttpCode.badRequest, `Such username/email already taken`);
     }
 
     const passwordHash = await StringUtils.hashPassword(requestParam.password);
@@ -98,18 +103,19 @@ class UserController extends BaseController implements UserInterface {
   }
 
   /**
-   * Authenticates user - public route
+   * @summary Authenticates user - public route
    * @param {object} ctx - Koa context
    * @param {object} ctx.request - Koa request
    * @param {object} ctx.params.body - Koa request body
    * @param {string} ctx.params.body.email - email value
    * @param {string} ctx.params.body.password - password value
    * @param {boolean} ctx.params.body.rememberMe - rememberMe state
+   * @returns void
    */
   public async authenticateUser(ctx: Context): Promise<void | typeof ctx.status> {
     const validation = authUserSchema.validate(ctx.request.body);
     if (validation.error as Joi.ValidationError) {
-      throw new Error(validation.error.details.pop().message);
+      ctx.throw(HttpCode.badRequest, validation.error.details.pop().message);
     }
     const user = await UserService.credentialsAreValid(validation.value) as UserType;
     if (!user) {
@@ -132,11 +138,6 @@ class UserController extends BaseController implements UserInterface {
       jwt: jwtToken
     };
   }
-
-  private static generateRefreshTokenString(): string {
-    return StringUtils.randomChars(128);
-  }
-
 
   /**
    * Restores expired token from cache with refreshToken value - public route

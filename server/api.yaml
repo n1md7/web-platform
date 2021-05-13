@@ -86,6 +86,65 @@ paths:
           description: "Wrong credentials"
         400:
           description: "Bad request happened"
+  /api/v1/template/new:
+    post:
+      summary: "Add new assessment template"
+      description: "Add new assessment template"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "auth-token"
+          description: "Authentication JWT header"
+          required: true
+          type: "string"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - name
+            properties:
+              name:
+                type: "string"
+                example: "My new assessment template name"
+      responses:
+        201:
+          description: "Added successfully"
+          schema:
+            $ref: '#/definitions/Template'
+        400:
+          description: "Validation error"
+        500:
+          $ref: '#/responses/500'
+  /api/v1/templates:
+    get:
+      summary: "Get templates"
+      description: "Get assessment template list"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "header"
+          name: "auth-token"
+          description: "Authentication JWT header"
+          required: true
+          type: "string"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
+      responses:
+        200:
+          description: "Assessment template's list"
+          schema:
+            $ref: '#/definitions/Templates'
+        401:
+          description: "Unauthorized"
+        500:
+          $ref: '#/responses/500'
   /health-check:
     get:
       summary: "Check the status of the service"
@@ -119,14 +178,34 @@ definitions:
           - "DOWN"
       version:
         type: "string"
-  Error:
+  Template:
     type: "object"
     properties:
-      data:
-        type: "object"
-        properties:
-          error:
-            type: "string"
-
+      id:
+        type: "number"
+      name:
+        type: "string"
+      status:
+        type: "string"
+        enum:
+          - "active"
+          - "hidden"
+      updatedAt:
+        type: "string"
+      createdAt:
+        type: "string"
+  Templates:
+    type: "array"
+    items:
+      $ref: '#/definitions/Template'
+  Auth:
+    type: "string"
+    name: "auth-token"
+    description: "Authentication JWT header"
+    required: true
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
+  Error:
+    type: "string"
+    example: "Internal Server Error"
 
 

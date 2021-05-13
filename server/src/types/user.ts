@@ -20,6 +20,7 @@ export type UserType = {
 
 export enum UserRole {
     basic = 'basic',
+    supplier = 'supplier',
     admin = 'admin',
 }
 

@@ -9,8 +9,6 @@ import logWrite from './logger';
 
 (async koa => {
   try {
-    // await database.sync({force: true}); // This will drop db tables and init again
-    await database.sync();
     // When DB is not accessible fail the app
     await database.authenticate();
     // Start Koa server

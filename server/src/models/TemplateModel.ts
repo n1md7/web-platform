@@ -3,10 +3,15 @@ import {
   Column,
   Model,
   PrimaryKey,
-  HasMany,
+  HasMany, AutoIncrement,
 } from 'sequelize-typescript';
 import AssessmentModel from "./AssessmentModel";
 import TemplateGroupModel from "./TemplateGroupModel";
+
+export enum TemplateStatus {
+  active = 'active',
+  hidden = 'hidden'
+}
 
 @Table({
   tableName: 'templates',
@@ -14,6 +19,7 @@ import TemplateGroupModel from "./TemplateGroupModel";
 })
 export default class TemplateModel extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id: number;
 
@@ -21,7 +27,7 @@ export default class TemplateModel extends Model {
   name: string;
 
   @Column
-  status: string;
+  status: TemplateStatus;
 
   @HasMany(() => AssessmentModel)
   assessments: AssessmentModel
