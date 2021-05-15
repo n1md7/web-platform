@@ -2,18 +2,20 @@ swagger: "2.0"
 info:
   title: "Swagger API documentation"
   description: >
-    This is an example Koa API.
+    This is an API documentation with all endpoint actions
   version: "1.0.0"
 host: "localhost:8080"
 schemes:
   - "http"
 tags:
+  - name: Users
+    description: User related actions
   - name: Templates
     description: Template related actions
   - name: Template groups
     description: Template group related actions
-  - name: Users
-    description: User related actions
+  - name: Template group questions
+    description: Template group question related actions
   - name: Version
     description: App version
   - name: Info
@@ -24,7 +26,7 @@ paths:
     post:
       tags:
         - Users
-      summary: "UserModel registration"
+      summary: "User registration"
       description: "Creates new user"
       consumes:
         - "application/json"
@@ -164,6 +166,31 @@ paths:
           description: "Unauthorized"
         500:
           $ref: '#/responses/500'
+  /api/v1/template/details:
+    get:
+      tags:
+        - Templates
+      description: "Get templates details with questions and groups"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: "Template details list"
+          schema:
+            $ref: '#/definitions/Template.Details'
+        401:
+          description: "Unauthorized"
+        500:
+          $ref: '#/responses/500'
   /api/v1/template/group/new:
     post:
       tags:
@@ -229,7 +256,47 @@ paths:
           description: "Unauthorized"
         500:
           $ref: '#/responses/500'
-
+  /api/v1/template/group/question/new:
+    post:
+      tags:
+        - Template group questions
+      description: Creates new template group question
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - groupId
+              - text
+            properties:
+              text:
+                type: string
+                example: My new template group name.
+              groupId:
+                description: Template question group Id
+                type: number
+                example: 1
+      responses:
+        201:
+          description: "Added successfully"
+          schema:
+            $ref: '#/definitions/Template.Group.Question'
+        400:
+          description: "Validation error"
+        500:
+          $ref: '#/responses/500'
   /health-check:
     get:
       tags:
@@ -266,22 +333,28 @@ definitions:
           - DOWN
       version:
         type: string
+        example: 1.0.0
   Template:
     type: object
     properties:
       id:
         type: number
+        example: 1
       name:
         type: string
-      status:
+        example: Ethical Trading Initiative
+      status?:
         type: string
         enum:
           - active
           - hidden
-      updatedAt:
+        example: active
+      updatedAt?:
         type: string
-      createdAt:
+        example: '2021-05-15T14:10:49.000Z'
+      createdAt?:
         type: string
+        example: '2021-05-15T14:10:49.000Z'
   Templates:
     type: array
     items:
@@ -291,23 +364,75 @@ definitions:
     properties:
       id:
         type: number
+        example: 1
       templateId:
         type: number
+        example: 1
       text:
         type: string
-      status:
+        example: Employment is freely chosen
+      status?:
         type: string
         enum:
           - active
           - hidden
-      updatedAt:
+        example: active
+      updatedAt?:
         type: string
-      createdAt:
+        example: '2021-05-15T14:10:49.000Z'
+      createdAt?:
         type: string
+        example: '2021-05-15T14:10:49.000Z'
   Template.Groups:
     type: array
     items:
-      $ref: '#/definitions/Template/Group'
+      $ref: '#/definitions/Template.Group'
+  Template.Group.Question:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 1
+      groupId:
+        description: Question group Id
+        type: number
+        example: 1
+      text:
+        description: Question text
+        type: string
+        example: There is no forced, bonded or involuntary prison labour
+      status?:
+        type: string
+        enum:
+          - active
+          - hidden
+          - removed
+        example: active
+      updatedAt?:
+        type: string
+        example: '2021-05-15T14:10:49.000Z'
+      createdAt?:
+        type: string
+        example: '2021-05-15T14:10:49.000Z'
+  Template.Details:
+    type: array
+    items:
+      allOf:
+        - $ref: '#/definitions/Template'
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/definitions/Template.Group'
+                  - type: object
+                    properties:
+                      questions:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/definitions/Template.Group.Question'
   Authentication:
     type: string
     format: JWT

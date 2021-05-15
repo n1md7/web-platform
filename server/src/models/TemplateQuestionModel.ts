@@ -1,11 +1,11 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  ForeignKey,
-} from 'sequelize-typescript';
+import {AutoIncrement, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import TemplateGroupModel from "./TemplateGroupModel";
+
+export enum TemplateQuestionStatus {
+  active = 'active',
+  hidden = 'hidden',
+  removed = 'removed'
+}
 
 @Table({
   tableName: 'templateQuestions',
@@ -13,6 +13,7 @@ import TemplateGroupModel from "./TemplateGroupModel";
 })
 export default class TemplateQuestionModel extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id!: number;
 

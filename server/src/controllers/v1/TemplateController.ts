@@ -1,5 +1,7 @@
 import Joi from "joi";
+import TemplateGroupModel, {TemplateGroupStatus} from "../../models/TemplateGroupModel";
 import TemplateModel, {TemplateStatus} from "../../models/TemplateModel";
+import TemplateQuestionModel, {TemplateQuestionStatus} from "../../models/TemplateQuestionModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
 
@@ -26,6 +28,29 @@ class TemplateController {
     ctx.body = await TemplateModel.findAll({
       where: {
         status: TemplateStatus.active
+      }
+    });
+  }
+
+  public async getTemplateDetails(ctx: MyContext): Promise<void> {
+    ctx.body = await TemplateModel.findAll({
+      where: {
+        status: TemplateStatus.active,
+      },
+      attributes: ['id', 'name'],
+      include: {
+        model: TemplateGroupModel,
+        attributes: ['id', 'templateId', 'text'],
+        where: {
+          status: TemplateGroupStatus.active
+        },
+        include: [{
+          model: TemplateQuestionModel,
+          attributes: ['id', 'groupId', 'text'],
+          where: {
+            status: TemplateQuestionStatus.active
+          },
+        }]
       }
     });
   }
