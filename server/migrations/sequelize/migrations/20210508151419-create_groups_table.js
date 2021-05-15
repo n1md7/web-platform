@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true
       },
-      templateId: {
+      assessmentId: {
         type: Sequelize.INTEGER(11),
         allowNull: false
       },
@@ -33,7 +33,7 @@ module.exports = {
       collate: 'utf8_general_ci'
     });
 
-    await queryInterface.addIndex('groups', ['templateId']);
+    await queryInterface.addIndex('groups', ['assessmentId']);
   },
 
   down: async (queryInterface) => {

@@ -4,20 +4,22 @@ import TemplateModel, {TemplateStatus} from "../../models/TemplateModel";
 import TemplateQuestionModel, {TemplateQuestionStatus} from "../../models/TemplateQuestionModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
+import Controller from "../Controller";
 
-export const newTemplateSchema = Joi.object({
+export const CreateTemplateSchema = Joi.object({
   name: Joi.string().min(6).max(128).required().label('Template Name'),
 });
 
-class TemplateController {
+type TemplateType = {
+  name: string
+}
+
+class TemplateController extends Controller {
   public async createNewTemplate(ctx: MyContext): Promise<void> {
-    const validation = newTemplateSchema.validate(ctx.request.body);
-    if (validation.error as Joi.ValidationError) {
-      ctx.throw(HttpCode.badRequest, validation.error.details.pop().message);
-    }
+    const validated = TemplateController.assert<TemplateType>(CreateTemplateSchema, ctx.request.body);
 
     ctx.body = await TemplateModel.create({
-      name: validation.value.name,
+      name: validated.name,
       status: TemplateStatus.active
     });
 

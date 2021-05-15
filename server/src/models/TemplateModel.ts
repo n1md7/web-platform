@@ -13,6 +13,14 @@ export enum TemplateStatus {
   hidden = 'hidden'
 }
 
+export type TemplateType = {
+  id: number;
+  name: string;
+  status?: TemplateStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 @Table({
   tableName: 'templates',
   timestamps: true

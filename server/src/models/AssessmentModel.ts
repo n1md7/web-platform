@@ -1,10 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  ForeignKey, HasMany,
-} from 'sequelize-typescript';
+import {AutoIncrement, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import GroupModel from "./GroupModel";
 import TemplateModel from "./TemplateModel";
 import UserModel from "./UserModel";
@@ -15,6 +9,7 @@ import UserModel from "./UserModel";
 })
 export default class AssessmentModel extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column
   id!: number;
 

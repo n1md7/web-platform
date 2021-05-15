@@ -1,15 +1,19 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey, HasMany, ForeignKey, AutoIncrement,
-} from 'sequelize-typescript';
-import TemplateQuestionModel from "./TemplateQuestionModel";
+import {AutoIncrement, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import TemplateModel from "./TemplateModel";
+import TemplateQuestionModel from "./TemplateQuestionModel";
 
 export enum TemplateGroupStatus {
   active = 'active',
   hidden = 'hidden'
+}
+
+export type TemplateGroupType = {
+  id: number;
+  templateId: number;
+  text: string;
+  status?: TemplateGroupStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Table({

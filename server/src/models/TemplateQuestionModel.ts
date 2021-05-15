@@ -7,6 +7,15 @@ export enum TemplateQuestionStatus {
   removed = 'removed'
 }
 
+export type TemplateQuestionType = {
+  id: number;
+  groupId: number;
+  text: string;
+  status?: TemplateQuestionStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 @Table({
   tableName: 'templateQuestions',
   timestamps: true
