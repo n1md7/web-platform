@@ -95,23 +95,23 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - in: "header"
-          name: "auth-token"
-          description: "Authentication JWT header"
-          required: true
-          type: "string"
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
-        - in: "body"
-          name: "body"
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
           required: true
           schema:
-            type: "object"
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
             required:
               - name
             properties:
               name:
-                type: "string"
-                example: "My new assessment template name"
+                type: string
+                example: My new assessment template name.
       responses:
         201:
           description: "Added successfully"
@@ -130,12 +130,12 @@ paths:
       produces:
         - "application/json"
       parameters:
-        - in: "header"
-          name: "auth-token"
-          description: "Authentication JWT header"
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
           required: true
-          type: "string"
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
+          schema:
+            $ref: "#/definitions/Authentication"
       responses:
         200:
           description: "Assessment template's list"
@@ -198,14 +198,12 @@ definitions:
     type: "array"
     items:
       $ref: '#/definitions/Template'
-  Auth:
-    type: "string"
-    name: "auth-token"
-    description: "Authentication JWT header"
-    required: true
-    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY"
+  Authentication:
+    type: string
+    format: JWT
+    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY
   Error:
-    type: "string"
-    example: "Internal Server Error"
+    type: string
+    example: Internal Server Error
 
 

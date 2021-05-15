@@ -7,7 +7,7 @@
     "url": "git@github.com:bichiko/koajs-template.git"
   },
   "scripts": {
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev --watch ./api.yaml,./package.json --notify src/index.ts",
     "prod:build": "rimraf dist && tsc",
     "prod": "export NODE_ENV=production && node dist/index.js",
     "test": "jest --coverage --forceExit",
@@ -19,7 +19,7 @@
     "mongo:info": "echo 'Please visit https://github.com/seppevs/migrate-mongo'",
     "mysql:create:seed": "npx sequelize seed:generate --name ",
     "mysql:create:migration": "npx sequelize migration:generate --name ",
-    "mysql:migrations": "npx sequelize db:migrate",
+    "mysql:migrations:run": "npx sequelize db:migrate",
     "mysql:migrations:undo": "npx sequelize db:migrate:undo ",
     "mysql:migrations:undo:all": "npx sequelize db:migrate:undo:all",
     "mysql:seeds": "npx sequelize db:seed:all",
