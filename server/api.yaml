@@ -7,10 +7,23 @@ info:
 host: "localhost:8080"
 schemes:
   - "http"
+tags:
+  - name: Templates
+    description: Template related actions
+  - name: Template groups
+    description: Template group related actions
+  - name: Users
+    description: User related actions
+  - name: Version
+    description: App version
+  - name: Info
+    description: App information related actions
 
 paths:
   /api/v1/user/new:
     post:
+      tags:
+        - Users
       summary: "UserModel registration"
       description: "Creates new user"
       consumes:
@@ -50,6 +63,8 @@ paths:
           description: "Bad request happened"
   /api/v1/user/auth:
     post:
+      tags:
+        - Users
       summary: "Authentication request"
       description: "Authenticates user based on email and password"
       consumes:
@@ -88,6 +103,8 @@ paths:
           description: "Bad request happened"
   /api/v1/template/new:
     post:
+      tags:
+        - Templates
       summary: "Add new assessment template"
       description: "Add new assessment template"
       consumes:
@@ -123,6 +140,8 @@ paths:
           $ref: '#/responses/500'
   /api/v1/templates:
     get:
+      tags:
+        - Templates
       summary: "Get templates"
       description: "Get assessment template list"
       consumes:
@@ -145,8 +164,77 @@ paths:
           description: "Unauthorized"
         500:
           $ref: '#/responses/500'
+  /api/v1/template/group/new:
+    post:
+      tags:
+        - Template groups
+      description: Creates new template group
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - templateId
+              - text
+            properties:
+              text:
+                type: string
+                example: My new template group name.
+              templateId:
+                type: number
+                example: 1
+      responses:
+        201:
+          description: "Added successfully"
+          schema:
+            $ref: '#/definitions/Template.Group'
+        400:
+          description: "Validation error"
+        500:
+          $ref: '#/responses/500'
+  /api/v1/template/groups:
+    get:
+      tags:
+        - Template groups
+      description: Get template group list
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: "Template group list"
+          schema:
+            $ref: '#/definitions/Template.Groups'
+        401:
+          description: "Unauthorized"
+        500:
+          $ref: '#/responses/500'
+
   /health-check:
     get:
+      tags:
+        - Info
+        - Version
       summary: "Check the status of the service"
       description: "If the service is up and running correctly the response will be 'UP'"
       consumes:
@@ -169,35 +257,57 @@ responses:
 
 definitions:
   Health:
-    type: "object"
+    type: object
     properties:
       status:
-        type: "string"
+        type: string
         enum:
-          - "UP"
-          - "DOWN"
+          - UP
+          - DOWN
       version:
-        type: "string"
+        type: string
   Template:
-    type: "object"
+    type: object
     properties:
       id:
-        type: "number"
+        type: number
       name:
-        type: "string"
+        type: string
       status:
-        type: "string"
+        type: string
         enum:
-          - "active"
-          - "hidden"
+          - active
+          - hidden
       updatedAt:
-        type: "string"
+        type: string
       createdAt:
-        type: "string"
+        type: string
   Templates:
-    type: "array"
+    type: array
     items:
       $ref: '#/definitions/Template'
+  Template.Group:
+    type: object
+    properties:
+      id:
+        type: number
+      templateId:
+        type: number
+      text:
+        type: string
+      status:
+        type: string
+        enum:
+          - active
+          - hidden
+      updatedAt:
+        type: string
+      createdAt:
+        type: string
+  Template.Groups:
+    type: array
+    items:
+      $ref: '#/definitions/Template/Group'
   Authentication:
     type: string
     format: JWT

@@ -33,4 +33,4 @@ npm run start --prefix ./app
 
 
 Database schema
-![img_1.png](img_1.png)
+![img_1.png](docs/img/img_1.png)
