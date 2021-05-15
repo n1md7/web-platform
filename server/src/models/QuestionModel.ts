@@ -25,5 +25,3 @@ export default class QuestionModel extends Model {
   @HasMany(() => AnswerModel)
   answers: AnswerModel[]
 }
-
-

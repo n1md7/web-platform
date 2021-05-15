@@ -19,9 +19,9 @@ Front-end
 npm install --prefix ./app
 ```
 
-## Run migrations for MongoDb
+## Run migrations
 ```bash
-npm run mongo:up
+npm run mysql:migrations
 ```
 
 ## Start development
@@ -31,6 +31,7 @@ npm run start --prefix ./app
 
 ```
 
+Swagger endpoint http://localhost:8080/swagger
 
 Database schema
 ![img_1.png](docs/img/img_1.png)

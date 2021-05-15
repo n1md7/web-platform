@@ -95,7 +95,7 @@ paths:
               rememberMe:
                 type: "boolean"
                 example: false
-
+                default: false
       responses:
         200:
           description: "Credentials are correct"
@@ -330,8 +330,6 @@ paths:
       responses:
         201:
           description: "Added successfully"
-          schema:
-            $ref: '#/definitions/Assessment' # Todo: create ref for assessment
         400:
           description: "Validation error"
         500:
