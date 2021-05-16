@@ -140,6 +140,12 @@ paths:
               name:
                 type: string
                 example: My new assessment template name.
+              status:
+                type: string
+                enum:
+                  - active
+                  - hidden
+                default: active
       responses:
         201:
           description: "Added successfully"
@@ -181,6 +187,7 @@ paths:
     get:
       tags:
         - Templates
+      summary: "Get templates details with questions and groups"
       description: "Get templates details with questions and groups"
       consumes:
         - "application/json"
@@ -198,6 +205,54 @@ paths:
           description: "Template details list"
           schema:
             $ref: '#/definitions/Template.Details'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/template/{templateId}:
+    put:
+      tags:
+        - Templates
+      summary: "Update template by id"
+      description: "Update template data by specific template identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                example: My new assessment template name.
+              status:
+                type: string
+                enum:
+                  - active
+                  - hidden
+                default: active
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template Id to update record
+      responses:
+        204:
+          description: Resource updated successfully
         401:
           $ref: '#/responses/401'
         500:
