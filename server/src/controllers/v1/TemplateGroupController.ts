@@ -28,7 +28,7 @@ type GroupType = {
   status: TemplateGroupStatus
 }
 
-export const UpdateGroupQuerySchema = Joi.object({
+const UpdateGroupQuerySchema = Joi.object({
   groupId: Joi.number().positive().required().label('Group ID'),
 });
 
@@ -61,6 +61,14 @@ class TemplateGroupController extends Controller {
         status: TemplateGroupStatus.active
       }
     });
+  }
+
+  public async getTemplateGroupById(ctx: MyContext): Promise<void> {
+    const validatedParam = TemplateGroupController.assert<GroupQueryType>(Joi.object({
+      groupId: Joi.number().positive().required().label('Group ID'),
+    }), ctx.params);
+
+    ctx.body = await TemplateGroupModel.findByPk(validatedParam.groupId);
   }
 
   public async updateTemplateGroupById(ctx: MyContext): Promise<void> {

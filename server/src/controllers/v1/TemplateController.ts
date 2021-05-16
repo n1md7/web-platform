@@ -2,6 +2,7 @@ import Joi from "joi";
 import TemplateGroupModel, {TemplateGroupStatus} from "../../models/TemplateGroupModel";
 import TemplateModel, {TemplateStatus} from "../../models/TemplateModel";
 import TemplateQuestionModel, {TemplateQuestionStatus} from "../../models/TemplateQuestionModel";
+import TemplateService from "../../services/TemplateService";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
 import Controller, {UserInputValidationError} from "../Controller";
@@ -70,6 +71,22 @@ class TemplateController extends Controller {
         }]
       }
     });
+  }
+
+  public async getTemplateById(ctx: MyContext): Promise<void> {
+    const validatedParam = TemplateController.assert<TemplateQueryType>(Joi.object({
+      templateId: Joi.number().positive().required().label('Template ID'),
+    }), ctx.params);
+
+    ctx.body = await TemplateModel.findByPk(validatedParam.templateId);
+  }
+
+  public async getTemplateDetailById(ctx: MyContext): Promise<void> {
+    const validatedParam = TemplateController.assert<TemplateQueryType>(Joi.object({
+      templateId: Joi.number().positive().required().label('Template ID'),
+    }), ctx.params);
+
+    ctx.body = await TemplateService.getTemplateDetailsById(validatedParam.templateId);
   }
 
   public async updateTemplateById(ctx: MyContext): Promise<void> {

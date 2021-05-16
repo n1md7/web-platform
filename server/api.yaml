@@ -179,6 +179,8 @@ paths:
           description: "Assessment template's list"
           schema:
             $ref: '#/definitions/Templates'
+        204:
+          description: No data
         401:
           $ref: '#/responses/401'
         500:
@@ -209,7 +211,76 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/template/detail/{templateId}:
+    get:
+      tags:
+        - Templates
+      summary: "Get template details by id"
+      description: "Get template detailed data by specific template identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template Id to get the record
+      responses:
+        200:
+          description: Template data
+          schema:
+            $ref: '#/definitions/Template.Detail'
+        204:
+          description: No data
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /api/v1/template/{templateId}:
+    get:
+      tags:
+        - Templates
+      summary: "Get template by id"
+      description: "Get template data by specific template identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: templateId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template Id to get the record
+      responses:
+        200:
+          description: Template data
+          schema:
+            $ref: '#/definitions/Template'
+        204:
+          description: No data
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
     put:
       tags:
         - Templates
@@ -320,6 +391,8 @@ paths:
           description: "Template group list"
           schema:
             $ref: '#/definitions/Template.Groups'
+        204:
+          description: No data
         401:
           $ref: '#/responses/401'
         500:
@@ -368,6 +441,40 @@ paths:
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/{groupId}:
+    get:
+      tags:
+        - Template groups
+      summary: "Get template group by id"
+      description: "Get template group data by specific template group identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: groupId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template group Id to get the record
+      responses:
+        200:
+          description: Template group
+          schema:
+            $ref: '#/definitions/Template.Group'
+        204:
+          description: No data
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
     put:
       tags:
         - Template groups
@@ -408,6 +515,88 @@ paths:
             type: number
             example: 1
           description: Template group Id to update record
+      responses:
+        204:
+          description: Resource updated successfully
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/template/group/question/{questionId}:
+    get:
+      tags:
+        - Template group questions
+      summary: "Get template question by id"
+      description: "Get template question data by specific template question identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template question Id to get the record
+      responses:
+        200:
+          description: Template question
+          schema:
+            $ref: '#/definitions/Template.Group.Question'
+        204:
+          description: No data
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+    put:
+      tags:
+        - Template group questions
+      summary: "Update template question by id"
+      description: "Update template question data by specific template question identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - text
+            properties:
+              text:
+                type: string
+                example: My new template question text.
+              status:
+                type: string
+                enum:
+                  - active
+                  - hidden
+                default: active
+        - in: path
+          name: questionId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template question Id to update record
       responses:
         204:
           description: Resource updated successfully
@@ -577,25 +766,33 @@ definitions:
       createdAt?:
         type: string
         example: '2021-05-15T14:10:49.000Z'
+  Template.Groups.Questions:
+    type: array
+    items:
+      $ref: '#/definitions/Template.Group.Question'
+  Template.Detail:
+    allOf:
+      - $ref: '#/definitions/Template'
+      - type: object
+        properties:
+          groups:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/Template.Group'
+                - type: object
+                  properties:
+                    questions:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: '#/definitions/Template.Group.Question'
   Template.Details:
     type: array
     items:
       allOf:
-        - $ref: '#/definitions/Template'
+        - $ref: '#/definitions/Template.Detail'
         - type: object
-          properties:
-            groups:
-              type: array
-              items:
-                allOf:
-                  - $ref: '#/definitions/Template.Group'
-                  - type: object
-                    properties:
-                      questions:
-                        type: array
-                        items:
-                          allOf:
-                            - $ref: '#/definitions/Template.Group.Question'
   Authentication:
     type: string
     format: JWT
