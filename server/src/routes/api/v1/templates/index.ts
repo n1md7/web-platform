@@ -10,7 +10,8 @@ templateRouter.get('/templates', authValidator, TemplateController.getTemplateLi
 templateRouter.get('/template/details', authValidator, TemplateController.getTemplateDetails);
 templateRouter.get('/template/groups', authValidator, TemplateGroupController.getTemplateGroupList);
 
-templateRouter.put('/template/:templateId', authValidator, TemplateController.updateTemplateNameById);
+templateRouter.put('/template/:templateId', authValidator, TemplateController.updateTemplateById);
+templateRouter.put('/template/group/:groupId', authValidator, TemplateGroupController.updateTemplateGroupById);
 
 templateRouter.post('/template/new', authValidator, TemplateController.createNewTemplate);
 templateRouter.post('/template/group/new', authValidator, TemplateGroupController.createNewTemplateGroup);

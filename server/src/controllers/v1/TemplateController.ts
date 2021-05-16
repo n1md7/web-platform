@@ -72,7 +72,7 @@ class TemplateController extends Controller {
     });
   }
 
-  public async updateTemplateNameById(ctx: MyContext): Promise<void> {
+  public async updateTemplateById(ctx: MyContext): Promise<void> {
     const validatedBody = TemplateController.assert<TemplateType>(CreateTemplateSchema, ctx.request.body);
     const validatedParam = TemplateController.assert<TemplateQueryType>(UpdateTemplateQuerySchema, ctx.params);
 

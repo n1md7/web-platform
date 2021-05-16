@@ -2,7 +2,7 @@ import Joi from "joi";
 import TemplateGroupModel, {TemplateGroupStatus} from "../../models/TemplateGroupModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
-import Controller from "../Controller";
+import Controller, {UserInputValidationError} from "../Controller";
 
 export const CreateTemplateGroupSchema = Joi.object({
   text: Joi.string().min(6).max(128).required().label('Template Name Text'),
@@ -12,6 +12,28 @@ export const CreateTemplateGroupSchema = Joi.object({
 type TemplateGroupType = {
   text: string;
   templateId: number
+}
+
+const UpdateGroupSchema = Joi.object({
+  text: Joi.string().min(6).max(128).required().label('Group Name Text'),
+  status: Joi.string()
+    .optional()
+    .valid(TemplateGroupStatus.active, TemplateGroupStatus.hidden)
+    .default(TemplateGroupStatus.active)
+    .label('Template Status'),
+});
+
+type GroupType = {
+  text: string,
+  status: TemplateGroupStatus
+}
+
+export const UpdateGroupQuerySchema = Joi.object({
+  groupId: Joi.number().positive().required().label('Group ID'),
+});
+
+type GroupQueryType = {
+  groupId: number
 }
 
 class TemplateGroupController extends Controller {
@@ -39,6 +61,31 @@ class TemplateGroupController extends Controller {
         status: TemplateGroupStatus.active
       }
     });
+  }
+
+  public async updateTemplateGroupById(ctx: MyContext): Promise<void> {
+    const validatedBody = TemplateGroupController.assert<GroupType>(UpdateGroupSchema, ctx.request.body);
+    const validatedParam = TemplateGroupController.assert<GroupQueryType>(UpdateGroupQuerySchema, ctx.params);
+
+    const [updatedRecordCount] = await TemplateGroupModel.update({
+      text: validatedBody.text,
+      status: validatedBody.status,
+    }, {
+      where: {
+        id: validatedParam.groupId
+      }
+    });
+
+    if (updatedRecordCount !== 1) {
+      throw new UserInputValidationError(TemplateGroupController.composeJoyErrorDetails([{
+          message: `Record was not updated for the id: ${validatedParam.groupId}`,
+          key: 'text',
+          value: validatedBody.text
+        }])
+      );
+    }
+
+    ctx.status = HttpCode.noContent;
   }
 }
 

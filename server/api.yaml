@@ -367,6 +367,54 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/template/group/{groupId}:
+    put:
+      tags:
+        - Template groups
+      summary: "Update template group by id"
+      description: "Update template group data by specific template group identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - text
+            properties:
+              text:
+                type: string
+                example: My new template group name.
+              status:
+                type: string
+                enum:
+                  - active
+                  - hidden
+                default: active
+        - in: path
+          name: groupId
+          required: true
+          schema:
+            type: number
+            example: 1
+          description: Template group Id to update record
+      responses:
+        204:
+          description: Resource updated successfully
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /api/v1/assessment/new:
     post:
       tags:
