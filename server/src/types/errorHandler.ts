@@ -27,7 +27,8 @@ export enum ErrorType {
     mongoError = 'MongoError',
     validationError = 'ValidationError',
     jsonWebTokenError = 'JsonWebTokenError',
-    tokenExpiredError = 'TokenExpiredError'
+    tokenExpiredError = 'TokenExpiredError',
+    userInputValidationError = 'UserInputValidationError'
 }
 
 export enum ExceptionType {

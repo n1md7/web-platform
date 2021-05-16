@@ -7,8 +7,8 @@ import UserModel from "../../models/UserModel";
 import UserService from "../../services/UserService";
 import {HttpCode} from '../../types/errorHandler';
 import {MyContext} from '../../types/koa';
-import {RequestUserType, UserRole, UserStatus, UserType} from "../../types/user";
-import {authUserSchema, createUserSchema} from './validators/UserRequestValidator';
+import {UserRole, UserStatus} from "../../types/user";
+import Controller, {UserInputValidationError} from "../Controller";
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,
@@ -28,7 +28,33 @@ export type JwtPayload = {
   exp?: number;
 };
 
-class UserController {
+export const CreateUserSchema = Joi.object({
+  email: Joi.string().min(6).max(128).required().label('E-mail'),
+  role: Joi.string().valid(UserRole.user, UserRole.supplier).required().label('Role'),
+  password: Joi.string().min(8).max(128).required().label('Password'),
+  confirmPassword: Joi.string().min(8).max(128).required().label('ConfirmPassword'),
+});
+
+export const AuthUserSchema = Joi.object({
+  email: Joi.string().min(6).max(128).required().label('E-mail'),
+  password: Joi.string().min(8).max(128).required().label('Password'),
+  rememberMe: Joi.boolean().optional().default(false).label('Remember me'),
+});
+
+type CreateUserSchemaType = {
+  email: string;
+  role: UserRole;
+  password: string;
+  confirmPassword: string;
+}
+
+type AuthUserSchemaType = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+class UserController extends Controller {
   private static generateNewJWT(payload: JwtPayload): string {
 
     return JsonWebToken.sign(
@@ -71,31 +97,42 @@ class UserController {
    * @returns void
    */
   public async createNewUser(ctx: Context): Promise<void> {
-    const validation = createUserSchema.validate(ctx.request.body);
-    if (validation.error as Joi.ValidationError) {
-      ctx.throw(HttpCode.badRequest, validation.error.details.pop().message);
-    }
-    if (validation.value.password !== validation.value.confirmPassword) {
-      ctx.throw(HttpCode.badRequest, "'password' and 'confirmPassword' didn't match!");
+    const validated = UserController.assert<CreateUserSchemaType>(CreateUserSchema, ctx.request.body);
+
+    if (validated.password !== validated.confirmPassword) {
+      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+          message: "Passwords didn't match!",
+          key: 'password',
+          value: validated.password
+        }, {
+          message: "Passwords didn't match!",
+          key: 'confirmPassword',
+          value: validated.confirmPassword
+        }])
+      );
     }
 
-    const requestParam = validation.value as RequestUserType;
     const resultRow = await UserModel.findOne({
       where: {
-        email: requestParam.email
+        email: validated.email
       }
     });
 
     if (resultRow) {
-      ctx.throw(HttpCode.badRequest, `Such username/email already taken`);
+      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+          message: "E-mail address is already taken",
+          key: 'email',
+          value: validated.email
+        }])
+      );
     }
 
-    const passwordHash = await StringUtils.hashPassword(requestParam.password);
+    const passwordHash = await StringUtils.hashPassword(validated.password);
 
     await UserModel.create({
-      email: requestParam.email,
+      email: validated.email,
       password: passwordHash,
-      role: UserRole.basic,
+      role: UserRole.user,
       status: UserStatus.active
     });
 
@@ -113,15 +150,14 @@ class UserController {
    * @returns void
    */
   public async authenticateUser(ctx: Context): Promise<void | typeof ctx.status> {
-    const validation = authUserSchema.validate(ctx.request.body);
-    if (validation.error as Joi.ValidationError) {
-      ctx.throw(HttpCode.badRequest, validation.error.details.pop().message);
-    }
-    const user = await UserService.credentialsAreValid(validation.value) as UserType;
+    const validated = UserController.assert<AuthUserSchemaType>(AuthUserSchema, ctx.request.body);
+
+    const user = await UserService.credentialsAreValid(validated);
     if (!user) {
       return ctx.status = HttpCode.unauthorized;
     }
-    const refreshToken = validation.value?.rememberMe ? UserController.generateRefreshTokenString() : '';
+    console.log(user)
+    const refreshToken = validated.rememberMe ? UserController.generateRefreshTokenString() : '';
     const payload = {
       userId: user.id,
       role: user.role,

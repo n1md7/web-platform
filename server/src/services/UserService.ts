@@ -15,7 +15,7 @@ export default class UserService {
       }
     });
     // No such user record in the Database
-    if (!user.email) {
+    if (!user) {
       return null;
     }
 
@@ -34,6 +34,6 @@ export default class UserService {
       status: user.status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
-    };
+    } as UserType;
   }
 }

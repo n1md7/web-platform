@@ -50,7 +50,10 @@ paths:
                 type: "string"
                 example: "username@email.com"
               role:
-                type: "string"
+                type: string
+                enum:
+                  - basic
+                  - supplier
                 example: "user"
               password:
                 type: "string"
@@ -59,12 +62,13 @@ paths:
                 type: "string"
                 example: "secret123"
       responses:
-        200:
-          description: "Registration is successful"
-          schema:
-            type: "string"
+        201:
+          description: Created
         400:
-          description: "Bad request happened"
+          $ref: '#/responses/400'
+        500:
+          $ref: '#/responses/500'
+
   /api/v1/user/auth:
     post:
       tags:
@@ -104,7 +108,10 @@ paths:
         401:
           description: "Wrong credentials"
         400:
-          description: "Bad request happened"
+          $ref: '#/responses/400'
+        500:
+          $ref: '#/responses/500'
+
   /api/v1/template/new:
     post:
       tags:
@@ -139,7 +146,9 @@ paths:
           schema:
             $ref: '#/definitions/Template'
         400:
-          description: "Validation error"
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/templates:
@@ -165,7 +174,7 @@ paths:
           schema:
             $ref: '#/definitions/Templates'
         401:
-          description: "Unauthorized"
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/template/details:
@@ -190,7 +199,7 @@ paths:
           schema:
             $ref: '#/definitions/Template.Details'
         401:
-          description: "Unauthorized"
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/new:
@@ -230,7 +239,9 @@ paths:
           schema:
             $ref: '#/definitions/Template.Group'
         400:
-          description: "Validation error"
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/template/groups:
@@ -255,7 +266,7 @@ paths:
           schema:
             $ref: '#/definitions/Template.Groups'
         401:
-          description: "Unauthorized"
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/question/new:
@@ -296,7 +307,9 @@ paths:
           schema:
             $ref: '#/definitions/Template.Group.Question'
         400:
-          description: "Validation error"
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /api/v1/assessment/new:
@@ -331,7 +344,9 @@ paths:
         201:
           description: "Added successfully"
         400:
-          description: "Validation error"
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
   /health-check:
@@ -354,6 +369,14 @@ paths:
           $ref: '#/responses/500'
 
 responses:
+  400:
+    description: Validation Error | Bad Request
+    schema:
+      $ref: '#/definitions/JoyError'
+  401:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/Unauthorized'
   500:
     description: Internal Server Error
     schema:
@@ -477,5 +500,44 @@ definitions:
   Error:
     type: string
     example: Internal Server Error
+  Unauthorized:
+    type: string
+    example: Unauthorized
+  JoyError:
+    type: object
+    properties:
+      message:
+        type: string
+        example: Invalid data provided
+      details:
+        type: array
+        items:
+          type: object
+          properties:
+            message:
+              type: string
+              example: '"Role" must be one of [user, supplier]'
+            context:
+              type: object
+              properties:
+                valids?:
+                  description: When enum values are specified
+                  type: array
+                  items:
+                    type: string
+                label:
+                  type: string
+                  example: Role
+                value:
+                  type: string
+                  description: User input value which was evaluated
+                key:
+                  type: string
+            type?:
+              type: string
+            path?:
+              type: array
+              items:
+                type: string
 
 

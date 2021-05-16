@@ -1,11 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  HasOne,
-  PrimaryKey, HasMany, DataType, AutoIncrement,
-} from 'sequelize-typescript';
-import {Optional} from 'sequelize';
+import {AutoIncrement, Column, DataType, HasMany, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import {UserRole, UserStatus} from "../types/user";
 import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
@@ -15,7 +8,7 @@ export type UserAttributes = {
   id: number;
   email: string;
   password: string;
-  role: string;
+  role: UserRole;
   status: string;
 }
 
@@ -23,7 +16,7 @@ export type UserAttributes = {
   tableName: 'users',
   timestamps: true
 })
-export default class UserModel extends Model<UserAttributes, Optional<UserAttributes, 'id'>> {
+export default class UserModel extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
