@@ -22,6 +22,8 @@ tags:
     description: App version
   - name: Info
     description: App information related actions
+  - name: File upload
+    description: File upload related actions
 
 paths:
   /api/v1/user/new:
@@ -641,6 +643,34 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/upload:
+    post:
+      tags:
+        - File upload
+      description: Upload a file
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The file to upload
+      responses:
+        201:
+          description: "File uploadedq"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /health-check:
     get:
       tags:
@@ -659,6 +689,8 @@ paths:
             $ref: "#/definitions/Health"
         500:
           $ref: '#/responses/500'
+
+
 
 responses:
   400:

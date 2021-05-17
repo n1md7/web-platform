@@ -4,14 +4,6 @@ import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
 
 
-export type UserAttributes = {
-  id: number;
-  email: string;
-  password: string;
-  role: UserRole;
-  status: string;
-}
-
 @Table({
   tableName: 'users',
   timestamps: true

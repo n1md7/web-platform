@@ -1,10 +1,4 @@
-import {
-  Table,
-  Column,
-  Model,
-  ForeignKey,
-  PrimaryKey,
-} from 'sequelize-typescript';
+import {Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import UserModel from "./UserModel";
 
 @Table({tableName: 'userInfo'})

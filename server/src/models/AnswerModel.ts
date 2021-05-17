@@ -1,12 +1,10 @@
-import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  ForeignKey,
-  AutoIncrement,
-} from 'sequelize-typescript';
+import {AutoIncrement, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import QuestionModel from "./QuestionModel";
+
+export enum AnswerStatus {
+  active = 'active',
+  hidden = 'hidden'
+}
 
 @Table({
   tableName: 'answers',
@@ -26,5 +24,5 @@ export default class AnswerModel extends Model {
   text!: string;
 
   @Column
-  status!: string;
+  status!: AnswerStatus;
 }

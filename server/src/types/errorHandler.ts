@@ -11,6 +11,7 @@ export enum HttpText {
 
 export enum HttpCode {
     internalServerError = 500,
+    unsupportedMediaType = 415,
     badRequest = 400,
     unauthorized = 401,
     forbidden = 403,

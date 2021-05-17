@@ -1,6 +1,7 @@
 import {AutoIncrement, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import AssessmentModel from "./AssessmentModel";
 import QuestionModel from "./QuestionModel";
+import {TemplateGroupStatus} from "./TemplateGroupModel";
 
 @Table({
   tableName: 'groups',
@@ -20,7 +21,7 @@ export default class GroupModel extends Model {
   text!: string;
 
   @Column
-  status!: string;
+  status!: TemplateGroupStatus;
 
   @HasMany(() => QuestionModel)
   questions?: QuestionModel[]

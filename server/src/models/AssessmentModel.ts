@@ -3,6 +3,11 @@ import GroupModel from "./GroupModel";
 import TemplateModel from "./TemplateModel";
 import UserModel from "./UserModel";
 
+export enum AssessmentStatus {
+  active = 'active',
+  hidden = 'hidden'
+}
+
 @Table({
   tableName: 'assessments',
   timestamps: true
@@ -25,7 +30,7 @@ export default class AssessmentModel extends Model {
   name!: string;
 
   @Column
-  status!: string;
+  status!: AssessmentStatus;
 
   @HasMany(() => GroupModel)
   answers: GroupModel[]

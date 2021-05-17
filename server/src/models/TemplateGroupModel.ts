@@ -34,7 +34,7 @@ export default class TemplateGroupModel extends Model {
   text!: string;
 
   @Column
-  status!: string;
+  status!: TemplateGroupStatus;
 
   @HasMany(() => TemplateQuestionModel)
   questions?: TemplateQuestionModel[]

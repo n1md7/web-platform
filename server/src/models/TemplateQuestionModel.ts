@@ -34,5 +34,5 @@ export default class TemplateQuestionModel extends Model {
   text!: string;
 
   @Column
-  status!: string;
+  status!: TemplateQuestionStatus;
 }
