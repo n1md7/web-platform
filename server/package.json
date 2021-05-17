@@ -71,6 +71,7 @@
     "@koa/multer": "^3.0.0",
     "@koa/router": "^10.0.0",
     "@types/file-type": "^10.9.1",
+    "@types/mime-types": "^2.1.0",
     "@types/node-cache": "^4.2.5",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
@@ -85,6 +86,7 @@
     "koa-static": "^5.0.0",
     "koa-swagger-decorator": "^1.7.4",
     "migrate-mongo": "^8.1.4",
+    "mime-types": "^2.1.30",
     "mongodb": "^3.6.4",
     "mongoose": "^5.11.15",
     "multer": "^1.4.2",
@@ -99,7 +101,6 @@
     "swagger2": "^3.0.0",
     "swagger2-koa": "^3.0.0",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.8",
     "winston": "^3.3.3"
   }
 }

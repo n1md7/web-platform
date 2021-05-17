@@ -662,9 +662,22 @@ paths:
           type: file
           required: true
           description: The file to upload
+        - in: formData
+          name: owner
+          description: Owner type value
+          type: string
+          required: true
+          enum:
+            - user
+            - answer
+        - in: formData
+          name: ownerId
+          required: true
+          description: Owner identifier
+          type: number
       responses:
         201:
-          description: "File uploadedq"
+          description: "File uploaded"
         400:
           $ref: '#/responses/400'
         401:
