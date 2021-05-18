@@ -13,6 +13,19 @@ export enum FileStatus {
   removed = 'removed'
 }
 
+export type FileType = {
+  id: number;
+  ownerId: number;
+  owner: FileOwner;
+  originalName: string;
+  name: string;
+  extension: string;
+  mime: MimeType;
+  status: FileStatus;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 @Table({
   tableName: 'files',
   timestamps: true

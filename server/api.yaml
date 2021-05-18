@@ -18,12 +18,14 @@ tags:
     description: Template group question related actions
   - name: Assessment actions
     description: Assessment related actions
+  - name: File upload
+    description: File upload related actions
+  - name: File download
+    description: File download related actions
   - name: Version
     description: App version
   - name: Info
     description: App information related actions
-  - name: File upload
-    description: File upload related actions
 
 paths:
   /api/v1/user/new:
@@ -679,6 +681,36 @@ paths:
         201:
           description: "File uploaded"
         400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/download/{fileHash}:
+    get:
+      tags:
+        - File download
+      description: Download file by hash name
+      consumes:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: fileHash
+          schema:
+            type: string
+            example: 1621365381738-46e168e9-8f85-4c0d-95f9-bf84c08f7bbd
+          required: true
+          description: File hash name
+      responses:
+        200:
+          description: "File downloading"
+        404:
           $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'

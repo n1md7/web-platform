@@ -1,5 +1,6 @@
 import Router from '@koa/router';
 import assessmentRouter from './assessments';
+import downloadRouter from './downloads';
 import templateRouter from './templates';
 import uploadRouter from './uploads';
 import userRouter from './users';
@@ -10,6 +11,7 @@ const combineApiRoutes = [
   templateRouter.routes(),
   assessmentRouter.routes(),
   uploadRouter.routes(),
+  downloadRouter.routes(),
 ];
 apiRoute.use('/v1', ...combineApiRoutes);
 

@@ -62,7 +62,6 @@ class UploadController extends Controller {
 
     ctx.status = 201;
   }
-
 }
 
 export default new UploadController;
