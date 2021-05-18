@@ -28,6 +28,32 @@ tags:
     description: App information related actions
 
 paths:
+  /api/v1/user/status:
+    get:
+      tags:
+        - Users
+      summary: "User status"
+      description: "User token expiration status in seconds"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: User expiration in seconds
+          schema:
+            type: number
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /api/v1/user/new:
     post:
       tags:
@@ -72,7 +98,6 @@ paths:
           $ref: '#/responses/400'
         500:
           $ref: '#/responses/500'
-
   /api/v1/user/auth:
     post:
       tags:
