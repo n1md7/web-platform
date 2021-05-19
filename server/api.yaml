@@ -32,8 +32,8 @@ paths:
     get:
       tags:
         - Users
-      summary: "User status"
-      description: "User token expiration status in seconds"
+      summary: "User token expiration"
+      description: "Get User token expiration status in seconds"
       consumes:
         - "application/json"
       produces:
@@ -50,8 +50,67 @@ paths:
           description: User expiration in seconds
           schema:
             type: number
+            example: 123
         401:
           $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/user/token/refresh:
+    get:
+      tags:
+        - Users
+      summary: "Get auth refresh token"
+      description: "Get new authentication token before old one expires"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: User expiration in seconds
+          schema:
+            type: string
+            example: XXXXX.YYYYY.ZZZZZ
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/user/token/restore/{refresh-token}:
+    get:
+      tags:
+        - Users
+      summary: "Restore expired token"
+      description: "Restore expired token with refresh token key"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: refresh-token
+          description: Refresh token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User expiration in seconds
+          schema:
+            type: object
+            properties:
+              jwt:
+                type: string
+                example: XXXXX.YYYYY.ZZZZZ
+              refreshToken:
+                type: string
+                example: abcdefgh1234567890abcdefg
+        400:
+          $ref: '#/responses/400'
         500:
           $ref: '#/responses/500'
   /api/v1/user/new:

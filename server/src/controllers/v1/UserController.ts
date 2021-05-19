@@ -7,7 +7,7 @@ import UserModel from "../../models/UserModel";
 import UserService from "../../services/UserService";
 import {HttpCode} from '../../types/errorHandler';
 import {MyContext} from '../../types/koa';
-import {UserRole, UserStatus} from "../../types/user";
+import {UserRole, UserStatus, UserType} from "../../types/user";
 import Controller, {UserInputValidationError} from "../Controller";
 
 enum CacheInterval {
@@ -149,14 +149,18 @@ class UserController extends Controller {
    * @param {boolean} ctx.params.body.rememberMe - rememberMe state
    * @returns void
    */
-  public async authenticateUser(ctx: Context): Promise<void | typeof ctx.status> {
+  public async authenticateUser(ctx: Context): Promise<void> {
     const validated = UserController.assert<AuthUserSchemaType>(AuthUserSchema, ctx.request.body);
 
-    const user = await UserService.credentialsAreValid(validated);
+    const user: UserType = await UserService.credentialsAreValid(validated);
     if (!user) {
-      return ctx.status = HttpCode.unauthorized;
+      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+          message: 'Incorrect credentials',
+          key: '',
+          value: ''
+        }]), HttpCode.unauthorized
+      );
     }
-    console.log(user)
     const refreshToken = validated.rememberMe ? UserController.generateRefreshTokenString() : '';
     const payload = {
       userId: user.id,
@@ -181,15 +185,24 @@ class UserController extends Controller {
    * @param {object} ctx.params - koa request GET params
    * @param {string} ctx.params.key - koa request GET param [key]
    */
-  public async restoreExpiredToken(ctx: Context): Promise<void | number> {
-    const token: string = ctx.params.key;
-    if (!rememberMeTokens.has(token)) {
-      return ctx.status = 400;
+  public async restoreExpiredToken(ctx: Context): Promise<void> {
+    const schema = Joi.object({
+      key: Joi.string().required().label('Refresh token key value'),
+    });
+    const validated = UserController.assert<{ key: string }>(schema, ctx.params);
+
+    if (!rememberMeTokens.has(validated.key)) {
+      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+          message: 'Invalid refresh token',
+          key: 'key',
+          value: validated.key
+        }]), HttpCode.badRequest
+      );
     }
 
-    const restoredUser = rememberMeTokens.get(token) as JwtPayload;
+    const restoredUser: JwtPayload = rememberMeTokens.get(validated.key);
     // remove from cache
-    rememberMeTokens.del(token);
+    rememberMeTokens.del(validated.key);
     // create new refresh token and save into cache
     const newRefreshToken = UserController.generateRefreshTokenString();
     rememberMeTokens.set(newRefreshToken, restoredUser);

@@ -13,7 +13,7 @@ export default class UserService {
       where: {
         email: requestParam.email,
       }
-    });
+    }) as UserType;
     // No such user record in the Database
     if (!user) {
       return null;
