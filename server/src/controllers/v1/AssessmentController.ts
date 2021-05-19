@@ -1,5 +1,6 @@
 import Joi from "joi";
 import AssessmentModel from "../../models/AssessmentModel";
+import FileModel, {FileStatus} from "../../models/FileModel";
 import GroupModel from "../../models/GroupModel";
 import QuestionModel from "../../models/QuestionModel";
 import {TemplateGroupStatus} from "../../models/TemplateGroupModel";
@@ -76,6 +77,13 @@ class AssessmentController extends Controller {
           where: {
             status: TemplateQuestionStatus.active
           },
+          include: [{
+            model: FileModel,
+            attributes: [],
+            where: {
+              status: FileStatus.active
+            },
+          }]
         }]
       }
     });

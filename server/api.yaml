@@ -954,6 +954,57 @@ definitions:
       allOf:
         - $ref: '#/definitions/Template.Detail'
         - type: object
+  Dates:
+    type: object
+    properties:
+      updatedAt?:
+        type: string
+        example: '2021-05-15T14:10:49.000Z'
+      createdAt?:
+        type: string
+        example: '2021-05-15T14:10:49.000Z'
+
+  File:
+    allOf:
+      - type: object
+      - properties:
+          id:
+            type: number
+            example: 1
+          ownerId:
+            type: number
+            example: 1
+          owner:
+            type: string
+            enum:
+              - user
+              - answer
+            example: answer
+          originalName:
+            type: string
+            example: my-document.pdf
+          name:
+            type: string
+            example: 1621365381738-46e168e9-8f85-4c0d-95f9-bf84c08f7bbd
+          extension:
+            type: string
+            example: .pdf
+          mime:
+            type: string
+            example: application/pdf
+          status:
+            type: string
+            enum:
+              - active
+              - removed
+            example: active
+      - $ref: '#/definitions/Dates'
+  Files:
+    type: array
+    items:
+      allOf:
+        - type: object
+        - $ref: '#/definitions/File'
   Authentication:
     type: string
     format: JWT
