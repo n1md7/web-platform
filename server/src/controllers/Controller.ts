@@ -1,4 +1,4 @@
-import Joi, {ObjectSchema, NumberSchema, StringSchema} from "joi";
+import Joi, {NumberSchema, ObjectSchema, StringSchema} from "joi";
 import {ErrorType, HttpCode} from "../types/errorHandler";
 
 export class UserInputValidationError extends Error {
@@ -18,8 +18,8 @@ export class UserInputValidationError extends Error {
 export default abstract class Controller {
   public static assert<P = any>(schema: ObjectSchema<any> | NumberSchema | StringSchema, validationParams: P): P {
     // Return all the errors detected during the validation
-    const validation = schema.validate(validationParams, {abortEarly: false});
-    if (validation.error as Joi.ValidationError) {
+    const validation: Joi.ValidationResult = schema.validate(validationParams, {abortEarly: false});
+    if (validation.error) {
       throw new UserInputValidationError(validation.error.details);
     }
 
