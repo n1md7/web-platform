@@ -4,7 +4,7 @@ import TemplateQuestionModel, {TemplateQuestionStatus} from "../models/TemplateQ
 
 export default class TemplateService {
   public static async getTemplateDetailsById(templateId: number): Promise<TemplateModel> {
-    return await TemplateModel.findOne({
+    return TemplateModel.findOne({
       where: {
         status: TemplateStatus.active,
         id: templateId

@@ -33,6 +33,11 @@ export default {
     "./node_modules",
     "./migrations",
     "./coverage",
+    "./src/config",
+    "./src/database",
+    "./src/types",
+    "./src/models",
+    "./src/routes",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
