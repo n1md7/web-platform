@@ -1,11 +1,11 @@
 import {FileExtension, MimeType} from 'file-type';
 import {AutoIncrement, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
-import AnswerModel from "./AnswerModel";
+import QuestionModel from "./QuestionModel";
 import UserModel from "./UserModel";
 
 export enum FileOwner {
   user = 'user',
-  answer = 'answer'
+  question = 'question'
 }
 
 export enum FileStatus {
@@ -36,7 +36,7 @@ export default class FileModel extends Model {
   @Column
   id!: number;
 
-  @ForeignKey(() => AnswerModel)
+  @ForeignKey(() => QuestionModel)
   @ForeignKey(() => UserModel)
   @Column
   ownerId!: number;

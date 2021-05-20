@@ -28,7 +28,7 @@ export const FileUploadSchema = Joi.object({
 });
 
 const FileUploadParams = Joi.object({
-  owner: Joi.string().valid(FileOwner.answer, FileOwner.user).label('Owner value'),
+  owner: Joi.string().valid(FileOwner.question, FileOwner.user).label('Owner value'),
   ownerId: Joi.number().positive().label('Owner identifier'),
 });
 

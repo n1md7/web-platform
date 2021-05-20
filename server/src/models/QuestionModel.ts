@@ -1,5 +1,6 @@
 import {AutoIncrement, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import AnswerModel from "./AnswerModel";
+import FileModel, {FileType} from "./FileModel";
 import GroupModel from "./GroupModel";
 import {TemplateQuestionStatus} from "./TemplateQuestionModel";
 
@@ -25,4 +26,7 @@ export default class QuestionModel extends Model {
 
   @HasMany(() => AnswerModel)
   answers: AnswerModel[]
+
+  @HasMany(() => FileModel)
+  attachments: FileType[]
 }

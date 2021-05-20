@@ -33,5 +33,5 @@ export default class AssessmentModel extends Model {
   status!: AssessmentStatus;
 
   @HasMany(() => GroupModel)
-  answers: GroupModel[]
+  groups: GroupModel[]
 }

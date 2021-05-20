@@ -729,6 +729,54 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/assessments:
+    get:
+      tags:
+        - Assessment actions
+      summary: Get assessment list
+      description: Get assessment list
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: "Document me" # TODO: Document this schema
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/assessment/details:
+    get:
+      tags:
+        - Assessment actions
+      summary: Get assessment details
+      description: Get assessment details with groups, questions, answers and attachements
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: "Document me" # TODO: Document this schema
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /api/v1/upload:
     post:
       tags:
@@ -755,7 +803,7 @@ paths:
           required: true
           enum:
             - user
-            - answer
+            - question
         - in: formData
           name: ownerId
           required: true

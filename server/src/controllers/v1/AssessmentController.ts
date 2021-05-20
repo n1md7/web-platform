@@ -1,6 +1,7 @@
 import Joi from "joi";
+import AnswerModel, {AnswerStatus} from "../../models/AnswerModel";
 import AssessmentModel from "../../models/AssessmentModel";
-import FileModel, {FileStatus} from "../../models/FileModel";
+import FileModel, {FileOwner, FileStatus} from "../../models/FileModel";
 import GroupModel from "../../models/GroupModel";
 import QuestionModel from "../../models/QuestionModel";
 import {TemplateGroupStatus} from "../../models/TemplateGroupModel";
@@ -61,28 +62,27 @@ class AssessmentController extends Controller {
 
   public async getAssessmentDetails(ctx: MyContext): Promise<void> {
     ctx.body = await AssessmentModel.findAll({
-      where: {
-        status: TemplateStatus.active,
-      },
-      attributes: [],
+      attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
       include: {
         model: GroupModel,
-        attributes: [],
-        where: {
-          status: TemplateGroupStatus.active
-        },
         include: [{
+          attributes: ['id', 'text', 'groupId'],
           model: QuestionModel,
-          attributes: [],
-          where: {
-            status: TemplateQuestionStatus.active
-          },
           include: [{
-            model: FileModel,
-            attributes: [],
+            model: AnswerModel,
+            // overrides default innerJoin behaviour. To get nested lower level data when no answers
+            required: false,
             where: {
-              status: FileStatus.active
-            },
+              status: AnswerStatus.active
+            }
+          }, {
+            model: FileModel,
+            // No innerJoin for this
+            required: false,
+            where: {
+              status: FileStatus.active,
+              owner: FileOwner.question,
+            }
           }]
         }]
       }
