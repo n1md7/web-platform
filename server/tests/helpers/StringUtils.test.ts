@@ -36,12 +36,14 @@ describe('StringUtils.hashCompare', () => {
   });
 
   it('should reject', async () => {
-    jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
-      throw new Error('ERROR:Rejected');
-    });
+    type Callback = (error: string, hash: null) => string;
+    jest.spyOn(bcrypt, 'hash')
+      .mockImplementation((password: string, saltRounds: number, callback: Callback) => {
+        callback('ERROR:Rejected', null);
+      });
     const password = 'veryStrongPassword321';
     await StringUtils.hashPassword(password).catch(error => {
-      expect(error.message).toBe('ERROR:Rejected');
+      expect(error).toBe('ERROR:Rejected');
     });
   });
 });
