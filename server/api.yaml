@@ -192,7 +192,17 @@ paths:
         200:
           description: "Credentials are correct"
           schema:
-            type: "string"
+            type: object
+            properties:
+              refreshToken:
+                description: This token is used when JWT is expired. Like one time accass pass.
+                type: string
+                example: 3ac451d3b00e775ff5b2b2a8
+              jwt:
+                description: Json Web Token
+                type: string
+                format: JWT
+                example: AAA.BBB.CCC
         401:
           description: "Wrong credentials"
         400:
@@ -294,7 +304,7 @@ paths:
         200:
           description: "Template details list"
           schema:
-            $ref: '#/definitions/Template.Details'
+            $ref: '#/definitions/TemplateDetails'
         401:
           $ref: '#/responses/401'
         500:
@@ -327,7 +337,7 @@ paths:
         200:
           description: Template data
           schema:
-            $ref: '#/definitions/Template.Detail'
+            $ref: '#/definitions/TemplateDetail'
         204:
           description: No data
         401:
@@ -451,7 +461,7 @@ paths:
         201:
           description: "Added successfully"
           schema:
-            $ref: '#/definitions/Template.Group'
+            $ref: '#/definitions/TemplateGroup'
         400:
           $ref: '#/responses/400'
         401:
@@ -478,7 +488,7 @@ paths:
         200:
           description: "Template group list"
           schema:
-            $ref: '#/definitions/Template.Groups'
+            $ref: '#/definitions/TemplateGroups'
         204:
           description: No data
         401:
@@ -521,7 +531,7 @@ paths:
         201:
           description: "Added successfully"
           schema:
-            $ref: '#/definitions/Template.Group.Question'
+            $ref: '#/definitions/TemplateGroupQuestion'
         400:
           $ref: '#/responses/400'
         401:
@@ -556,7 +566,7 @@ paths:
         200:
           description: Template group
           schema:
-            $ref: '#/definitions/Template.Group'
+            $ref: '#/definitions/TemplateGroup'
         204:
           description: No data
         401:
@@ -638,7 +648,7 @@ paths:
         200:
           description: Template question
           schema:
-            $ref: '#/definitions/Template.Group.Question'
+            $ref: '#/definitions/TemplateGroupQuestion'
         204:
           description: No data
         401:
@@ -748,7 +758,9 @@ paths:
             $ref: "#/definitions/Authentication"
       responses:
         200:
-          description: "Document me" # TODO: Document this schema
+          description: Get assessment list without any nested values
+          schema:
+            $ref: '#/definitions/Assessments'
         401:
           $ref: '#/responses/401'
         500:
@@ -772,7 +784,9 @@ paths:
             $ref: "#/definitions/Authentication"
       responses:
         200:
-          description: "Document me" # TODO: Document this schema
+          description: Assassment details with all nested values
+          schema:
+            $ref: '#/definitions/AssessmentDetail'
         401:
           $ref: '#/responses/401'
         500:
@@ -920,7 +934,7 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/Template'
-  Template.Group:
+  TemplateGroup:
     type: object
     properties:
       id:
@@ -944,11 +958,11 @@ definitions:
       createdAt?:
         type: string
         example: '2021-05-15T14:10:49.000Z'
-  Template.Groups:
+  TemplateGroups:
     type: array
     items:
-      $ref: '#/definitions/Template.Group'
-  Template.Group.Question:
+      $ref: '#/definitions/TemplateGroup'
+  TemplateGroupQuestion:
     type: object
     properties:
       id:
@@ -975,11 +989,11 @@ definitions:
       createdAt?:
         type: string
         example: '2021-05-15T14:10:49.000Z'
-  Template.Groups.Questions:
+  TemplateGroupsQuestions:
     type: array
     items:
-      $ref: '#/definitions/Template.Group.Question'
-  Template.Detail:
+      $ref: '#/definitions/TemplateGroupQuestion'
+  TemplateDetail:
     allOf:
       - $ref: '#/definitions/Template'
       - type: object
@@ -988,20 +1002,50 @@ definitions:
             type: array
             items:
               allOf:
-                - $ref: '#/definitions/Template.Group'
+                - $ref: '#/definitions/TemplateGroup'
                 - type: object
                   properties:
                     questions:
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/definitions/Template.Group.Question'
-  Template.Details:
+                          - $ref: '#/definitions/TemplateGroupQuestion'
+  TemplateDetails:
     type: array
     items:
-      allOf:
-        - $ref: '#/definitions/Template.Detail'
-        - type: object
+      $ref: '#/definitions/TemplateDetail'
+  AssessmentDetail:
+    allOf:
+      - $ref: '#/definitions/Assessment'
+      - type: object
+        properties:
+          groups:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/Group'
+                - type: object
+                  properties:
+                    questions:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: '#/definitions/Question'
+                          - type: object
+                            properties:
+                              attachments:
+                                type: array
+                                items:
+                                  $ref: '#/definitions/File'
+                              answers:
+                                type: array
+                                items:
+                                  $ref: '#/definitions/Answer'
+
+  AssessmentDetails:
+    type: array
+    items:
+      $ref: '#/definitions/AssessmentDetail'
   Dates:
     type: object
     properties:
@@ -1011,7 +1055,6 @@ definitions:
       createdAt?:
         type: string
         example: '2021-05-15T14:10:49.000Z'
-
   File:
     allOf:
       - type: object
@@ -1099,5 +1142,61 @@ definitions:
               type: array
               items:
                 type: string
-
-
+  Assessment:
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Template'
+  Assessments:
+    type: array
+    items:
+      allOf:
+        - type: object
+          properties:
+            userId:
+              type: number
+              example: 1
+            templateId:
+              type: number
+              example: 1
+        - $ref: '#/definitions/Assessment'
+  Group:
+    allOf:
+      - type: object
+      - $ref: '#/definitions/TemplateGroup'
+  Groups:
+    type: array
+    items:
+      $ref: '#/definitions/Group'
+  Question:
+    allOf:
+      - type: object
+      - $ref: '#/definitions/TemplateGroupQuestion'
+  Questions:
+    type: array
+    items:
+      $ref: '#/definitions/Question'
+  Answer:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 1
+      questionId:
+        type: number
+        example: 1
+      text:
+        type: string
+        example: What is 1+1 ?
+      status?:
+        type: string
+        enum:
+          - active
+          - hidden
+        example: active
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Dates'
+  Answers:
+    type: array
+    items:
+      $ref: '#/definitions/Question'
