@@ -34,4 +34,4 @@ npm run start --prefix ./app
 Swagger endpoint http://localhost:8080/swagger
 
 Database schema
-![img_1.png](docs/img/img_1.png)
+![diagram.svg](docs/img/db.diagram.svg)
