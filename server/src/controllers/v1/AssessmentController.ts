@@ -88,6 +88,43 @@ class AssessmentController extends Controller {
       }
     });
   }
+
+  public async getAssessmentDetailsById(ctx: MyContext): Promise<void> {
+    type AssessmentReqType = {
+      assessmentId: number;
+    };
+    const bodySchema = Joi.object({
+      assessmentId: Joi.number().positive().label('Assessment ID'),
+    });
+    const validated = AssessmentController.assert<AssessmentReqType>(bodySchema, ctx.params);
+
+    ctx.body = await AssessmentModel.findByPk(validated.assessmentId, {
+      attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
+      include: {
+        model: GroupModel,
+        include: [{
+          attributes: ['id', 'text', 'groupId'],
+          model: QuestionModel,
+          include: [{
+            model: AnswerModel,
+            // overrides default innerJoin behaviour. To get nested lower level data when no answers
+            required: false,
+            where: {
+              status: AnswerStatus.active
+            }
+          }, {
+            model: FileModel,
+            // No innerJoin for this
+            required: false,
+            where: {
+              status: FileStatus.active,
+              owner: FileOwner.question,
+            }
+          }]
+        }]
+      }
+    });
+  }
 }
 
 export default new AssessmentController;

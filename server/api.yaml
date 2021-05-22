@@ -707,6 +707,7 @@ paths:
       tags:
         - Assessment actions
       description: Creates new assessment
+      summary: Create new assessment
       consumes:
         - "application/json"
       produces:
@@ -733,6 +734,49 @@ paths:
       responses:
         201:
           description: "Added successfully"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/assessment/answer:
+    post:
+      tags:
+        - Assessment actions
+      description: Adds new assessment answer record
+      summary: Create answer record
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - questionId
+              - text
+            properties:
+              questionId:
+                description: Question id
+                type: number
+                example: 1
+              text:
+                description: Question text
+                type: string
+                example: What does a computer do?
+      responses:
+        201:
+          description: "Created"
         400:
           $ref: '#/responses/400'
         401:
@@ -769,8 +813,8 @@ paths:
     get:
       tags:
         - Assessment actions
-      summary: Get assessment details
-      description: Get assessment details with groups, questions, answers and attachements
+      summary: Get all assessment details
+      description: Get all assessment details with groups, questions, answers and attachements
       consumes:
         - "application/json"
       produces:
@@ -784,9 +828,42 @@ paths:
             $ref: "#/definitions/Authentication"
       responses:
         200:
+          description: All assassment details with all nested values
+          schema:
+            $ref: '#/definitions/AssessmentDetails'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/assessment/details/{assessmentId}:
+    get:
+      tags:
+        - Assessment actions
+      summary: Get assessment details
+      description: Get assessment details with groups, questions, answers and attachements
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: assessmentId
+          description: Assessment identificator
+          required: true
+          type: number
+      responses:
+        200:
           description: Assassment details with all nested values
           schema:
             $ref: '#/definitions/AssessmentDetail'
+        400:
+          $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
         500:
