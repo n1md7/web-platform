@@ -5,7 +5,8 @@ import TemplateQuestionModel, {TemplateQuestionStatus} from "../../models/Templa
 import TemplateService from "../../services/TemplateService";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
-import Controller, {UserInputValidationError} from "../Controller";
+import Controller, {ExposeError} from "../Controller";
+import {UserRole} from "./UserController";
 
 export const CreateTemplateSchema = Joi.object({
   name: Joi.string().min(6).max(128).required().label('Template Name'),
@@ -31,6 +32,8 @@ type TemplateQueryType = {
 
 class TemplateController extends Controller {
   public async createNewTemplate(ctx: MyContext): Promise<void> {
+    // TODO: Create middleware for such validations below and reuse this functionality
+    TemplateController.allowed([UserRole.admin, UserRole.bot]).currentRole(ctx.store.role);
     const validated = TemplateController.assert<TemplateType>(CreateTemplateSchema, ctx.request.body);
 
     ctx.body = await TemplateModel.create({
@@ -51,6 +54,8 @@ class TemplateController extends Controller {
 
   // Gets only with status:active
   public async getTemplateDetails(ctx: MyContext): Promise<void> {
+    TemplateController.allowed([UserRole.admin, UserRole.bot]).currentRole(ctx.store.role);
+
     ctx.body = await TemplateModel.findAll({
       where: {
         status: TemplateStatus.active,
@@ -74,6 +79,8 @@ class TemplateController extends Controller {
   }
 
   public async getTemplateById(ctx: MyContext): Promise<void> {
+    TemplateController.allowed([UserRole.admin, UserRole.bot]).currentRole(ctx.store.role);
+
     const validatedParam = TemplateController.assert<TemplateQueryType>(Joi.object({
       templateId: Joi.number().positive().required().label('Template ID'),
     }), ctx.params);
@@ -82,6 +89,8 @@ class TemplateController extends Controller {
   }
 
   public async getTemplateDetailById(ctx: MyContext): Promise<void> {
+    TemplateController.allowed([UserRole.admin, UserRole.bot]).currentRole(ctx.store.role);
+
     const validatedParam = TemplateController.assert<TemplateQueryType>(Joi.object({
       templateId: Joi.number().positive().required().label('Template ID'),
     }), ctx.params);
@@ -90,6 +99,8 @@ class TemplateController extends Controller {
   }
 
   public async updateTemplateById(ctx: MyContext): Promise<void> {
+    TemplateController.allowed([UserRole.admin, UserRole.bot]).currentRole(ctx.store.role);
+
     const validatedBody = TemplateController.assert<TemplateType>(CreateTemplateSchema, ctx.request.body);
     const validatedParam = TemplateController.assert<TemplateQueryType>(UpdateTemplateQuerySchema, ctx.params);
 
@@ -103,7 +114,7 @@ class TemplateController extends Controller {
     });
 
     if (updatedRecordCount !== 1) {
-      throw new UserInputValidationError(TemplateController.composeJoyErrorDetails([{
+      throw new ExposeError(TemplateController.composeJoyErrorDetails([{
           message: `Record was not updated for the id: ${validatedParam.templateId}`,
           key: 'name',
           value: validatedBody.name

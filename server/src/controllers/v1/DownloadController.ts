@@ -5,7 +5,7 @@ import config from "../../config";
 import FileModel, {FileType} from "../../models/FileModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
-import Controller, {UserInputValidationError} from "../Controller";
+import Controller, {ExposeError} from "../Controller";
 
 // Pattern is hex value of file hash (checksum - SHA256)
 const pattern = new RegExp(/^[A-Fa-f0-9]{64}$/);
@@ -23,21 +23,27 @@ class DownloadController extends Controller {
     }) as FileType;
 
     if (!file) {
-      throw new UserInputValidationError(DownloadController.composeJoyErrorDetails([{
+      throw new ExposeError(DownloadController.composeJoyErrorDetails([{
           message: 'File not found in database',
           key: 'fileHash',
           value: validatedParam.fileHash
-        }]), HttpCode.notFound
+        }]), {
+          status: HttpCode.notFound,
+          exceptionMessage: 'Not found'
+        }
       );
     }
 
     const filePath = path.join(config.server.uploadDir, file.name + file.extension);
     if (!fs.existsSync(filePath)) {
-      throw new UserInputValidationError(DownloadController.composeJoyErrorDetails([{
+      throw new ExposeError(DownloadController.composeJoyErrorDetails([{
           message: 'File not found in server',
           key: 'fileHash',
           value: validatedParam.fileHash
-        }]), HttpCode.notFound
+        }]), {
+          status: HttpCode.notFound,
+          exceptionMessage: 'Not found'
+        }
       );
     }
 

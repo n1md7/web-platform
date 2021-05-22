@@ -253,6 +253,8 @@ paths:
           $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/templates:
@@ -307,6 +309,8 @@ paths:
             $ref: '#/definitions/TemplateDetails'
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/detail/{templateId}:
@@ -342,6 +346,8 @@ paths:
           description: No data
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/{templateId}:
@@ -377,6 +383,8 @@ paths:
           description: No data
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
     put:
@@ -424,6 +432,8 @@ paths:
           description: Resource updated successfully
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/new:
@@ -466,6 +476,8 @@ paths:
           $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/groups:
@@ -493,6 +505,8 @@ paths:
           description: No data
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/question/new:
@@ -536,6 +550,8 @@ paths:
           $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/{groupId}:
@@ -571,6 +587,8 @@ paths:
           description: No data
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
     put:
@@ -618,6 +636,8 @@ paths:
           description: Resource updated successfully
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/template/group/question/{questionId}:
@@ -653,6 +673,8 @@ paths:
           description: No data
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
     put:
@@ -700,6 +722,8 @@ paths:
           description: Resource updated successfully
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/assessment/new:
@@ -934,10 +958,10 @@ paths:
       responses:
         200:
           description: "File downloading"
-        404:
-          $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
+        404:
+          $ref: '#/responses/400'
         500:
           $ref: '#/responses/500'
   /health-check:
@@ -970,6 +994,10 @@ responses:
     description: Unauthorized
     schema:
       $ref: '#/definitions/Unauthorized'
+  403:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/Forbidden'
   500:
     description: Internal Server Error
     schema:
@@ -1184,6 +1212,9 @@ definitions:
   Unauthorized:
     type: string
     example: Unauthorized
+  Forbidden:
+    type: string
+    example: Forbidden
   JoyError:
     type: object
     properties:

@@ -1,6 +1,6 @@
+import {AuthUserSchemaType} from "../controllers/v1/UserController";
 import StringUtils from "../helpers/StringUtils";
-import UserModel from "../models/UserModel";
-import {RequestAuthType, UserType} from "../types/user";
+import UserModel, {UserType} from "../models/UserModel";
 
 export default class UserService {
   /**
@@ -8,7 +8,7 @@ export default class UserService {
    * @param requestParam
    * @returns null or user object
    */
-  public static async credentialsAreValid(requestParam: RequestAuthType): Promise<null | UserType> {
+  public static async credentialsAreValid(requestParam: AuthUserSchemaType): Promise<null | UserType> {
     const user = await UserModel.findOne({
       where: {
         email: requestParam.email,

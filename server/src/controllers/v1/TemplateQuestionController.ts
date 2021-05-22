@@ -2,7 +2,7 @@ import Joi from "joi";
 import TemplateQuestionModel, {TemplateQuestionStatus} from "../../models/TemplateQuestionModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
-import Controller, {UserInputValidationError} from "../Controller";
+import Controller, {ExposeError} from "../Controller";
 
 export const CreateTemplateGroupSchema = Joi.object({
   text: Joi.string().min(6).max(128).required().label('Template Name Text'),
@@ -77,7 +77,7 @@ class TemplateQuestionController extends Controller {
     });
 
     if (updatedRecordCount !== 1) {
-      throw new UserInputValidationError(TemplateQuestionController.composeJoyErrorDetails([{
+      throw new ExposeError(TemplateQuestionController.composeJoyErrorDetails([{
           message: `Record was not updated for the id: ${validatedParam.questionId}`,
           key: 'text',
           value: validatedBody.text

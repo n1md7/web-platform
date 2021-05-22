@@ -3,12 +3,11 @@ import JsonWebToken from 'jsonwebtoken';
 import {Context} from 'koa';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
-import UserModel from "../../models/UserModel";
+import UserModel, {UserType} from "../../models/UserModel";
 import UserService from "../../services/UserService";
 import {HttpCode} from '../../types/errorHandler';
 import {MyContext} from '../../types/koa';
-import {UserRole, UserStatus, UserType} from "../../types/user";
-import Controller, {UserInputValidationError} from "../Controller";
+import Controller, {ExposeError} from "../Controller";
 
 enum CacheInterval {
   day = 60 * 60 * 12 * 24,
@@ -19,6 +18,19 @@ const rememberMeTokens = new NodeCache({
   stdTTL: CacheInterval.week,
   checkperiod: CacheInterval.day
 });
+
+export enum UserRole {
+  user = 'user',
+  supplier = 'supplier',
+  admin = 'admin',
+  bot = 'bot'
+}
+
+export enum UserStatus {
+  active = 'active',
+  disabled = 'disabled',
+  blocked = 'blocked'
+}
 
 export type JwtPayload = {
   role: UserRole;
@@ -48,7 +60,7 @@ type CreateUserSchemaType = {
   confirmPassword: string;
 }
 
-type AuthUserSchemaType = {
+export type AuthUserSchemaType = {
   email: string;
   password: string;
   rememberMe: boolean;
@@ -100,7 +112,7 @@ class UserController extends Controller {
     const validated = UserController.assert<CreateUserSchemaType>(CreateUserSchema, ctx.request.body);
 
     if (validated.password !== validated.confirmPassword) {
-      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
           message: "Passwords didn't match!",
           key: 'password',
           value: validated.password
@@ -119,7 +131,7 @@ class UserController extends Controller {
     });
 
     if (resultRow) {
-      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
           message: "E-mail address is already taken",
           key: 'email',
           value: validated.email
@@ -154,11 +166,13 @@ class UserController extends Controller {
 
     const user: UserType = await UserService.credentialsAreValid(validated);
     if (!user) {
-      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
           message: 'Incorrect credentials',
           key: '',
           value: ''
-        }]), HttpCode.unauthorized
+        }]), {
+          status: HttpCode.unauthorized
+        }
       );
     }
     const refreshToken = validated.rememberMe ? UserController.generateRefreshTokenString() : '';
@@ -192,11 +206,13 @@ class UserController extends Controller {
     const validated = UserController.assert<{ key: string }>(schema, ctx.params);
 
     if (!rememberMeTokens.has(validated.key)) {
-      throw new UserInputValidationError(UserController.composeJoyErrorDetails([{
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
           message: 'Invalid refresh token',
           key: 'key',
           value: validated.key
-        }]), HttpCode.badRequest
+        }]), {
+          status: HttpCode.badRequest
+        }
       );
     }
 

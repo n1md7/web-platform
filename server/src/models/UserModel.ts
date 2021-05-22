@@ -1,7 +1,17 @@
 import {AutoIncrement, Column, DataType, HasMany, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
-import {UserRole, UserStatus} from "../types/user";
+import {UserRole, UserStatus} from "../controllers/v1/UserController";
 import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
+
+export type UserType = {
+  id: number;
+  password: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 
 @Table({

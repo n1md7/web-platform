@@ -1,12 +1,7 @@
-import {ValidationErrorItem} from 'joi';
 import {Context, Next} from "koa";
+import {ExposeError} from "../controllers/Controller";
 import {ErrorType, HttpCode, HttpText,} from "../types/errorHandler";
 
-interface MyError extends Error {
-  details?: ValidationErrorItem[],
-  status?: number,
-  expose?: boolean
-}
 
 class ErrorHandler {
   static async handle(ctx: Context, next: Next): Promise<void> {
@@ -15,18 +10,17 @@ class ErrorHandler {
     });
   }
 
-  private static buildErrorMessage(error: MyError, ctx: Context) {
+  private static buildErrorMessage(error: ExposeError, ctx: Context) {
     const status: number = error.status || ctx.status || HttpCode.internalServerError;
     const errorMessage: string = error.message || HttpText.internalServerError;
 
     return `[${error.name}:${status}] - [${errorMessage}] - ${JSON.stringify(error.details)}`;
   }
 
-  private static handleEverythingElse(error: MyError, ctx: Context) {
-
+  private static handleEverythingElse(error: ExposeError, ctx: Context) {
     switch (error.name) {
-      case ErrorType.userInputValidationError:
-        ctx.status = error.status || HttpCode.badRequest;
+      case ErrorType.exposeError:
+        ctx.status = error.status;
         ctx.body = {
           message: error.message,
           details: error.details
