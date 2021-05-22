@@ -37,6 +37,7 @@ class AssessmentController extends Controller {
       const newGroup = await GroupModel.create({
         assessmentId: assessment.id,
         text: group.text,
+        userId: ctx.store.userId,
         status: TemplateGroupStatus.active
       });
       // Create questions
@@ -44,6 +45,7 @@ class AssessmentController extends Controller {
         await QuestionModel.create({
           groupId: newGroup.id,
           text: question.text,
+          userId: ctx.store.userId,
           status: TemplateQuestionStatus.active
         });
       }
@@ -55,13 +57,18 @@ class AssessmentController extends Controller {
   public async getAssessmentList(ctx: MyContext): Promise<void> {
     ctx.body = await AssessmentModel.findAll({
       where: {
-        status: TemplateStatus.active
+        status: TemplateStatus.active,
+        userId: ctx.store.userId,
       }
     });
   }
 
   public async getAssessmentDetails(ctx: MyContext): Promise<void> {
     ctx.body = await AssessmentModel.findAll({
+      where: {
+        // Get data only associated with auth user
+        userId: ctx.store.userId
+      },
       attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
       include: {
         model: GroupModel,
@@ -98,7 +105,11 @@ class AssessmentController extends Controller {
     });
     const validated = AssessmentController.assert<AssessmentReqType>(bodySchema, ctx.params);
 
-    ctx.body = await AssessmentModel.findByPk(validated.assessmentId, {
+    ctx.body = await AssessmentModel.findOne({
+      where: {
+        id: validated.assessmentId,
+        userId: ctx.store.userId
+      },
       attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
       include: {
         model: GroupModel,

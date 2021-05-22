@@ -21,6 +21,9 @@ export default class GroupModel extends Model {
   text!: string;
 
   @Column
+  userId!: number;
+
+  @Column
   status!: TemplateGroupStatus;
 
   @HasMany(() => QuestionModel)

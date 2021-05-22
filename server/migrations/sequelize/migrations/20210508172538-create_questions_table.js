@@ -20,6 +20,10 @@ module.exports = {
         type: Sequelize.STRING(64),
         allowNull: false
       },
+      userId: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+      },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

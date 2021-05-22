@@ -22,6 +22,9 @@ export default class QuestionModel extends Model {
   text!: string;
 
   @Column
+  userId!: number;
+
+  @Column
   status!: TemplateQuestionStatus;
 
   @HasMany(() => AnswerModel)

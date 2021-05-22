@@ -25,4 +25,7 @@ export default class AnswerModel extends Model {
 
   @Column
   status!: AnswerStatus;
+
+  @Column
+  userId!: number;
 }
