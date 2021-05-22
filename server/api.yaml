@@ -993,11 +993,11 @@ responses:
   401:
     description: Unauthorized
     schema:
-      $ref: '#/definitions/Unauthorized'
+      $ref: '#/definitions/JoyError'
   403:
     description: Forbidden
     schema:
-      $ref: '#/definitions/Forbidden'
+      $ref: '#/definitions/JoyError'
   500:
     description: Internal Server Error
     schema:

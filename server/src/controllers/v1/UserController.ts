@@ -171,6 +171,7 @@ class UserController extends Controller {
           key: '',
           value: ''
         }]), {
+          exceptionMessage: 'Incorrect credentials',
           status: HttpCode.unauthorized
         }
       );
