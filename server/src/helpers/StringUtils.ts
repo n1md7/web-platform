@@ -27,4 +27,11 @@ export default class StringUtils {
     return crypto.randomBytes(len / 2).toString('hex');
   }
 
+  public static createHashFromBuffer(fileBuffer: string): string {
+    const checksum = crypto.createHash('sha256');
+    checksum.update(fileBuffer);
+
+    return checksum.digest('hex');
+  }
+
 }

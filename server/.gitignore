@@ -3,4 +3,4 @@ coverage
 *.log
 dist
 .secrets.env
-/uploads
+uploads

@@ -55,3 +55,12 @@ describe('StringUtils.randomChars', () => {
     expect(chars).toHaveLength(10);
   });
 });
+
+describe.each([
+  ['123', 64],
+  ['', 64],
+  ['short text', 64],
+  ['very long text 123 haha..hmmm', 64]
+])('StringUtils.createHashFromBuffer(%s) => should generate hash from buffer with len: %d', (value, expectedLength) => {
+  expect(StringUtils.createHashFromBuffer(value)).toHaveLength(expectedLength);
+});

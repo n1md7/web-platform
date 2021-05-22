@@ -1,13 +1,14 @@
 import * as fs from "fs";
 import Joi from "joi";
 import path from "path";
+import config from "../../config";
 import FileModel, {FileType} from "../../models/FileModel";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
 import Controller, {UserInputValidationError} from "../Controller";
 
-// Pattern is Date number following with UUID
-const pattern = new RegExp(/^[\d]{12,13}-[\w]*-[\w]*-[\w]*-[\w]*-[\w]*$/);
+// Pattern is hex value of file hash (checksum - SHA256)
+const pattern = new RegExp(/^[A-Fa-f0-9]{64}$/);
 const FileDownloadParams = Joi.object({
   fileHash: Joi.string().regex(pattern).label('File hash value'),
 });
@@ -30,7 +31,7 @@ class DownloadController extends Controller {
       );
     }
 
-    const filePath = path.join(__dirname, `../../../uploads/${file.name + file.extension}`);
+    const filePath = path.join(config.server.uploadDir, file.name + file.extension);
     if (!fs.existsSync(filePath)) {
       throw new UserInputValidationError(DownloadController.composeJoyErrorDetails([{
           message: 'File not found in server',

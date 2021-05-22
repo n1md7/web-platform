@@ -1,3 +1,5 @@
+import path from "path";
+
 export default {
   server: {
     apiContextPath: '/api',
@@ -5,8 +7,9 @@ export default {
     port: 8080,
     staticFolderPath: '../../../app/build',
     indexFile: '/index.html',
-    swaggerApiPath: "../../api.yaml",
+    swaggerApiPath: path.join(__dirname, "../../api.yaml"),
     swaggerContextPath: "/swagger",
+    uploadDir: process.env.USER_UPLAODS_DIR || path.join(__dirname, `../../uploads`)
   },
   origin: 'http://localhost:3000',
   loggerOptions: {

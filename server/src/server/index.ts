@@ -33,7 +33,7 @@ export default class Server {
     if (process.env.NODE_ENV === Env.Prod) {
       this.config.origin = process.env.ORIGIN;
     }
-    this.swaggerDocument = loadDocumentSync(path.join(__dirname, config.server.swaggerApiPath)) as swagger.Document;
+    this.swaggerDocument = loadDocumentSync(config.server.swaggerApiPath) as swagger.Document;
   }
 
   init(): Server {

@@ -850,9 +850,10 @@ paths:
           name: fileHash
           schema:
             type: string
-            example: 1621365381738-46e168e9-8f85-4c0d-95f9-bf84c08f7bbd
+            format: hex
+            example: f2a375470859e6cdd43b5e5a98117b69d7c3da4663c9746bbee8bc272d831ce7
           required: true
-          description: File hash name
+          description: SHA256 string representation of file hash/checksum
       responses:
         200:
           description: "File downloading"
