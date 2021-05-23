@@ -53,6 +53,32 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/user/details:
+    get:
+      tags:
+        - Users
+      summary: "User information"
+      description: "Get User details"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+      responses:
+        200:
+          description: User information
+          schema:
+            $ref: '#/definitions/UserDetail'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
   /api/v1/user/token/refresh:
     get:
       tags:
@@ -1318,3 +1344,145 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/Question'
+  Country:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 1
+      name:
+        type: string
+        example: Georgia
+      code:
+        type: string
+        example: GE
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Dates'
+  Industry:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 1
+      name:
+        type: string
+        example: Computer Hardware
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Dates'
+  Organisation:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 1
+      name:
+        type: string
+        example: Kodu Group
+      website:
+        type: string
+        example: www.kodugroup.ge
+      entityType:
+        type: string
+        enum:
+          - Individual
+          - Student
+          - LLC
+          - LLP
+          - Charity
+          - Government
+          - Other
+        example: Individual
+      registeredNumber:
+        type: number
+        example: 12345678
+      street:
+        type: string
+        example: Gonsiori 24
+      cityOrTown:
+        type: string
+        example: Tallinn
+      countryOrState:
+        type: string
+        example: Tallinn
+      postCOde:
+        type: number
+        example: 12345678
+      size:
+        type: string
+        enum:
+          - Large
+          - Medium
+          - Small
+          - Micro
+        example: Medium
+      countryId:
+        type: number
+        example: 1
+      country:
+        $ref: '#/definitions/Country'
+      industryId:
+        type: number
+        example: 1
+      industry:
+        $ref: '#/definitions/Industry'
+      status?:
+        type: string
+        enum:
+          - active
+          - pending-approval
+          - hidden
+        example: active
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Dates'
+  UserInfo:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 1
+      userId:
+        type: number
+        example: 1
+      firstName:
+        type: string
+        example: John
+      middleName:
+        type: string
+        example: Badass
+      lastName:
+        type: string
+        example: Doe
+      dateOfBirth:
+        type: string
+        example: '2001-05-15T14:10:49.000Z'
+      organisationId:
+        type: number
+        example: 1
+      organisation:
+        $ref: '#/definitions/Organisation'
+    allOf:
+      - type: object
+      - $ref: '#/definitions/Dates'
+  UserDetail:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 1
+      email:
+        type: string
+        example: johndoe@email.com
+      role:
+        $ref: '#/definitions/UserRole'
+      userInfo:
+        $ref: '#/definitions/UserInfo'
+  UserRole:
+    type: string
+    enum:
+      - user
+      - supplier
+      - admin
+      - bot

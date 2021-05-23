@@ -2,24 +2,14 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('organisation', {
+    await queryInterface.createTable('country', {
       id: {
         type: Sequelize.BIGINT,
         primaryKey: true,
         autoIncrement: true
       },
       name: Sequelize.STRING(128),
-      website: Sequelize.STRING(256),
-      entityType: Sequelize.STRING(64),
-      industryId: Sequelize.INTEGER(11),
-      registeredNumber: Sequelize.INTEGER(64),
-      street: Sequelize.STRING(128),
-      cityOrTown: Sequelize.STRING(128),
-      countryOrState: Sequelize.STRING(128),
-      postCode: Sequelize.INTEGER(16),
-      countryId: Sequelize.INTEGER(11),
-      size: Sequelize.STRING(64),
-      status: Sequelize.STRING(64),
+      code: Sequelize.STRING(4),
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -35,6 +25,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('organisation');
+    await queryInterface.dropTable('country');
   }
 };

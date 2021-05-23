@@ -2,9 +2,6 @@
 
 const IndustryList = [
   {
-    "name": "Industry "
-  },
-  {
     "name": "Accounting "
   },
   {

@@ -1,6 +1,6 @@
-import {AutoIncrement, Column, ForeignKey, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {AutoIncrement, BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import CountryModel from "./CountryModel";
 import IndustryModel from "./IndustryModel";
-import UserInfoModel from "./UserInfoModel";
 
 
 export enum EntityType {
@@ -10,7 +10,7 @@ export enum EntityType {
   LLP = 'LLP',
   charity = 'Charity',
   government = 'Government',
-  other = 'other'
+  other = 'Other'
 }
 
 export enum CompanySize {
@@ -21,7 +21,7 @@ export enum CompanySize {
 }
 
 export enum CompanyStatus {
-  confirmed = 'Confirmed',
+  active = 'active',
   pendingApproval = 'pending-approval',
   hidden = 'hidden'
 }
@@ -49,7 +49,6 @@ export type OrganisationType = {
 })
 export default class OrganisationModel extends Model {
   @PrimaryKey
-  @ForeignKey(() => UserInfoModel)
   @AutoIncrement
   @Column
   id: number;
@@ -62,10 +61,6 @@ export default class OrganisationModel extends Model {
 
   @Column
   entityType: EntityType;
-
-  @ForeignKey(() => IndustryModel)
-  @Column
-  industryId: number;
 
   @Column
   registeredNumber: number;
@@ -82,8 +77,6 @@ export default class OrganisationModel extends Model {
   @Column
   postCode: number;
 
-  @Column
-  country: string;
 
   @Column
   size: CompanySize;
@@ -91,6 +84,17 @@ export default class OrganisationModel extends Model {
   @Column
   status: CompanyStatus;
 
-  @HasOne(() => IndustryModel)
+  @ForeignKey(() => CountryModel)
+  @Column
+  countryId: number;
+
+  @ForeignKey(() => IndustryModel)
+  @Column
+  industryId: number;
+
+  @BelongsTo(() => IndustryModel)
   industry?: IndustryModel
+
+  @BelongsTo(() => CountryModel)
+  country?: CountryModel
 }

@@ -1,5 +1,4 @@
-import {AutoIncrement, Column, DataType, ForeignKey, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
-import OrganisationModel from "./OrganisationModel";
+import {AutoIncrement, Column, DataType, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 
 @Table({
   tableName: 'industry',
@@ -7,7 +6,6 @@ import OrganisationModel from "./OrganisationModel";
 })
 export default class IndustryModel extends Model {
   @PrimaryKey
-  @ForeignKey(() => OrganisationModel)
   @AutoIncrement
   @Column
   id: number;

@@ -1,4 +1,4 @@
-import {Column, ForeignKey, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import OrganisationModel from "./OrganisationModel";
 import UserModel from "./UserModel";
 
@@ -25,13 +25,13 @@ export default class UserInfoModel extends Model {
   @Column
   lastName: string;
 
+  @Column
+  dateOfBirth: Date;
+
   @ForeignKey(() => OrganisationModel)
   @Column
   organisationId: number;
 
-  @Column
-  dateOfBirth: Date;
-
-  @HasOne(() => OrganisationModel)
+  @BelongsTo(() => OrganisationModel)
   organisation?: OrganisationModel
 }

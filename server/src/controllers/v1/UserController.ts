@@ -3,7 +3,11 @@ import JsonWebToken from 'jsonwebtoken';
 import {Context} from 'koa';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
-import UserModel, {UserType} from "../../models/UserModel";
+import CountryModel from "../../models/CountryModel";
+import IndustryModel from "../../models/IndustryModel";
+import OrganisationModel from "../../models/OrganisationModel";
+import UserInfoModel from "../../models/UserInfoModel";
+import UserModel, {UserPlan, UserType} from "../../models/UserModel";
 import UserService from "../../services/UserService";
 import {HttpCode} from '../../types/errorHandler';
 import {MyContext} from '../../types/koa';
@@ -145,7 +149,8 @@ class UserController extends Controller {
       email: validated.email,
       password: passwordHash,
       role: UserRole.user,
-      status: UserStatus.active
+      status: UserStatus.active,
+      plan: UserPlan.free
     });
 
     ctx.status = HttpCode.created;
@@ -232,6 +237,19 @@ class UserController extends Controller {
       }),
       refreshToken: newRefreshToken
     };
+  }
+
+  public async getUserDetails(ctx: MyContext): Promise<void> {
+    ctx.body = await UserModel.findByPk(ctx.store.userId, {
+      attributes: ['id', 'email', 'role'],
+      include: {
+        model: UserInfoModel,
+        include: [{
+          model: OrganisationModel,
+          include: [IndustryModel, CountryModel]
+        }]
+      }
+    });
   }
 }
 
