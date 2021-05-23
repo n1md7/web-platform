@@ -14,7 +14,11 @@ class ErrorHandler {
     const status: number = error.status || ctx.status || HttpCode.internalServerError;
     const errorMessage: string = error.message || HttpText.internalServerError;
 
-    return `[${error.name}:${status}] - [${errorMessage}] - ${JSON.stringify(error.details)}`;
+    ctx.app.emit('error:server', `[${error.name}:${status}] - [${errorMessage}] - ${JSON.stringify(error.details)}`);
+    if (status === 500) {
+      // Log more error details when 500
+      ctx.app.emit('error:server', error.stack);
+    }
   }
 
   private static handleEverythingElse(error: ExposeError, ctx: Context) {
@@ -36,7 +40,7 @@ class ErrorHandler {
         ctx.body = HttpText.internalServerError;
     }
 
-    ctx.app.emit('error:server', ErrorHandler.buildErrorMessage(error, ctx));
+    ErrorHandler.buildErrorMessage(error, ctx);
   }
 }
 

@@ -15,15 +15,18 @@ export class ExposeError extends Error {
   public details: Joi.ValidationErrorItem[] | null;
 
   constructor(error: Joi.ValidationErrorItem[], options?: Options) {
-    options.status = options.status || HttpCode.badRequest;
-    options.exceptionMessage = options.exceptionMessage || 'Validation Error';
-    options.errorType = options.errorType || ErrorType.exposeError;
-    options.expose = options.expose || true;
+    const optionValues = {
+      status: HttpCode.badRequest,
+      exceptionMessage: 'Validation Error',
+      errorType: ErrorType.exposeError,
+      expose: true,
+      ...options
+    };
 
-    super((options as Options).exceptionMessage);
-    this.name = (options as Options).errorType;
-    this.status = (options as Options).status;
-    this.expose = (options as Options).expose;
+    super((optionValues as Options).exceptionMessage);
+    this.name = (optionValues as Options).errorType;
+    this.status = (optionValues as Options).status;
+    this.expose = (optionValues as Options).expose;
     this.details = error;
   }
 }

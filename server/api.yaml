@@ -18,10 +18,8 @@ tags:
     description: Template group question related actions
   - name: Assessment actions
     description: Assessment related actions
-  - name: File upload
-    description: File upload related actions
-  - name: File download
-    description: File download related actions
+  - name: File actions
+    description: File upload/download related actions
   - name: Version
     description: App version
   - name: Info
@@ -895,7 +893,7 @@ paths:
   /api/v1/upload:
     post:
       tags:
-        - File upload
+        - File actions
       description: Upload a file
       consumes:
         - multipart/form-data
@@ -933,10 +931,10 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
-  /api/v1/download/{fileHash}:
+  /api/v1/download/{fileHash}/{forceDownload}:
     get:
       tags:
-        - File download
+        - File actions
       description: Download file by hash name
       consumes:
         - "application/json"
@@ -955,6 +953,17 @@ paths:
             example: f2a375470859e6cdd43b5e5a98117b69d7c3da4663c9746bbee8bc272d831ce7
           required: true
           description: SHA256 string representation of file hash/checksum
+        - in: path
+          name: forceDownload
+          schema:
+            type: number
+            enum:
+              - 0
+              - 1
+            default: 1
+            example: 1
+          required: false
+          description: Ignore default browser behaviour and force download all kind of files
       responses:
         200:
           description: "File downloading"

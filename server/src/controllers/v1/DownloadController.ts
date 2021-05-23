@@ -7,15 +7,21 @@ import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
 import Controller, {ExposeError} from "../Controller";
 
+enum Download {
+  force,
+  default,
+}
+
 // Pattern is hex value of file hash (checksum - SHA256)
 const pattern = new RegExp(/^[A-Fa-f0-9]{64}$/);
 const FileDownloadParams = Joi.object({
   fileHash: Joi.string().regex(pattern).label('File hash value'),
+  forceDownload: Joi.number().optional().default(Download.force).valid(Download.force, Download.default).label('Force download'),
 });
 
 class DownloadController extends Controller {
   public async downloadFile(ctx: MyContext): Promise<void> {
-    const validatedParam = DownloadController.assert<{ fileHash: string }>(FileDownloadParams, ctx.params);
+    const validatedParam = DownloadController.assert<{ fileHash: string, forceDownload?: number }>(FileDownloadParams, ctx.params);
     const file = await FileModel.findOne({
       where: {
         name: validatedParam.fileHash
@@ -51,8 +57,10 @@ class DownloadController extends Controller {
     // Specifying original name so user will be downloading with that name
     ctx.set('Content-disposition', `attachment; filename=${file.originalName}`);
     ctx.set('Content-type', file.mime);
-    // Ignore default behaviour and force download all kind of files
-    ctx.set('Content-Type', 'application/force-download');
+    if (validatedParam.forceDownload === Download.force) {
+      // Ignore default behaviour and force download all kind of files
+      ctx.set('Content-Type', 'application/force-download');
+    }
   }
 
 }
