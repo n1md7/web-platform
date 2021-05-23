@@ -9,10 +9,15 @@ export type UserType = {
   email: string;
   role: UserRole;
   status: UserStatus;
+  plan: UserPlan;
   createdAt: Date;
   updatedAt: Date;
 };
 
+export enum UserPlan {
+  free = 'free',
+  premium = 'premium'
+}
 
 @Table({
   tableName: 'users',
@@ -35,6 +40,9 @@ export default class UserModel extends Model {
 
   @Column
   status: UserStatus;
+
+  @Column
+  plan: UserPlan;
 
   @HasOne(() => UserInfoModel)
   userInfo?: UserInfoModel

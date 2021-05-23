@@ -1,7 +1,12 @@
-import {Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {Column, ForeignKey, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import OrganisationModel from "./OrganisationModel";
 import UserModel from "./UserModel";
 
-@Table({tableName: 'userInfo'})
+@Table({
+  tableName: 'userInfo',
+  timestamps: true
+
+})
 export default class UserInfoModel extends Model {
   @PrimaryKey
   @Column
@@ -20,15 +25,13 @@ export default class UserInfoModel extends Model {
   @Column
   lastName: string;
 
+  @ForeignKey(() => OrganisationModel)
   @Column
-  organization: string;
+  organisationId: number;
 
   @Column
   dateOfBirth: Date;
 
-  @Column
-  createdAt: Date
-
-  @Column
-  updatedAt: Date
+  @HasOne(() => OrganisationModel)
+  organisation?: OrganisationModel
 }

@@ -2,21 +2,13 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('userInfo', {
+    await queryInterface.createTable('industry', {
       id: {
         type: Sequelize.BIGINT,
         primaryKey: true,
         autoIncrement: true
       },
-      userId: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false
-      },
-      firstName: Sequelize.STRING(32),
-      middleName: Sequelize.STRING(32),
-      lastName: Sequelize.STRING(32),
-      organisationId: Sequelize.INTEGER(11),
-      dateOfBirth: Sequelize.DATE,
+      name: Sequelize.STRING(128),
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -29,11 +21,9 @@ module.exports = {
       charset: 'utf8',
       collate: 'utf8_general_ci'
     });
-
-    await queryInterface.addIndex('userInfo', ['userId']);
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('userInfo');
+    await queryInterface.dropTable('industry');
   }
 };
