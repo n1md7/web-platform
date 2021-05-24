@@ -77,7 +77,6 @@ export default class OrganisationModel extends Model {
   @Column
   postCode: number;
 
-
   @Column
   size: CompanySize;
 
