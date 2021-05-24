@@ -1,18 +1,12 @@
 import {BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
 import OrganisationModel from "./OrganisationModel";
-import UserModel from "./UserModel";
 
 @Table({
   tableName: 'userInfo',
   timestamps: true
-
 })
 export default class UserInfoModel extends Model {
   @PrimaryKey
-  @Column
-  id: number;
-
-  @ForeignKey(() => UserModel)
   @Column
   userId: number;
 

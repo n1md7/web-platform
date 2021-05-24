@@ -234,6 +234,61 @@ paths:
         500:
           $ref: '#/responses/500'
 
+  /api/v1/user/info:
+    put:
+      tags:
+        - Users
+      summary: "User info update or insert"
+      description: "User info update or insert"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - firstName
+              - lastName
+              - middleName
+              - dateOfBirth
+              - organisationId
+            properties:
+              firstName:
+                type: string
+                example: Nimda
+              lastName:
+                type: string
+                example: Admin
+              middleName:
+                type: string
+                example: hmm
+              dateOfBirth:
+                type: string
+                description: ISO string date
+                example: 2011-10-05T14:48:00.000Z
+              organisationId:
+                type: number
+                example: 1
+      responses:
+        202:
+          description: "Accepted"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        500:
+          $ref: '#/responses/500'
+
   /api/v1/template/new:
     post:
       tags:

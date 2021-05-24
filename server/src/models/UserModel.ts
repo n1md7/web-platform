@@ -1,4 +1,14 @@
-import {AutoIncrement, Column, DataType, HasMany, HasOne, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 import {UserRole, UserStatus} from "../controllers/v1/UserController";
 import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
@@ -25,6 +35,7 @@ export enum UserPlan {
 })
 export default class UserModel extends Model {
   @PrimaryKey
+  @ForeignKey(() => UserInfoModel)
   @AutoIncrement
   @Column
   id: number;
@@ -44,7 +55,7 @@ export default class UserModel extends Model {
   @Column
   plan: UserPlan;
 
-  @HasOne(() => UserInfoModel)
+  @BelongsTo(() => UserInfoModel)
   userInfo?: UserInfoModel
 
   @HasMany(() => AssessmentModel)
