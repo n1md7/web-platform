@@ -11,6 +11,7 @@
     "prod:build": "rimraf dist && tsc",
     "prod": "export NODE_ENV=production && node dist/index.js",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "diagram:generate": "ts-node-dev src/tools/generateDatabaseDiagrams.ts",
     "create:seed": "npx sequelize seed:generate --name ",
