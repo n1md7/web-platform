@@ -1,5 +1,5 @@
 import {Context, Next} from "koa";
-import {ExposeError} from "../controllers/Controller";
+import Controller, {ExposeError} from "../controllers/Controller";
 import {ErrorType, HttpCode, HttpText,} from "../types/errorHandler";
 
 
@@ -32,8 +32,16 @@ class ErrorHandler {
         break;
       case ErrorType.jsonWebTokenError:
       case ErrorType.tokenExpiredError:
+        ctx.body = {
+          message: HttpText.unauthorized,
+          details: Controller.composeJoyErrorDetails([{
+            message: error.message,
+            value: ctx.get(process.env.JWT_HEADER_NAME),
+            key: process.env.JWT_HEADER_NAME,
+            label: 'Authentication header'
+          }])
+        }
         ctx.status = HttpCode.unauthorized;
-        ctx.body = error.message;
         break;
       default:
         ctx.status = HttpCode.internalServerError;

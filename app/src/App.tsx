@@ -1,9 +1,9 @@
 import React from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
-import Authentication from './pages/Authentication';
-import Main from './pages/Main';
-import Registration from './pages/Registration';
+import Authentication from './views/Authentication';
+import Main from './views/Main';
+import Registration from './views/Registration';
 import UserSignOut from './components/UserSignOut';
 import './App.scss';
 

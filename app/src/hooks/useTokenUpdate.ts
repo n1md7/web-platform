@@ -1,8 +1,8 @@
-import {useEffect, useState} from "react";
-import store, {actionUpdate} from "../services/TokenStore";
-import {httpClient} from '../services/HttpClient';
 import {AxiosResponse} from 'axios';
+import {useEffect, useState} from "react";
 import {useHistory} from 'react-router';
+import {httpClient} from '../services/HttpClient';
+import store, {actionUpdate} from "../services/TokenStore";
 import {Token} from '../types';
 import {AuthResponseType} from "./useAuthenticate";
 
@@ -58,6 +58,7 @@ export default function useTokenUpdate(): [boolean, boolean, string] {
     (async () => {
       let token = localStorage.getItem(Token.jwt);
       let refreshToken = localStorage.getItem(Token.refresh);
+      if(refreshToken === "undefined") refreshToken = null;
       // No token = no authenticated
       if (!token) {
         if (refreshToken) {
@@ -80,6 +81,7 @@ export default function useTokenUpdate(): [boolean, boolean, string] {
         .get<AxiosResponse, AxiosResponse<string>>('v1/user/status')
         .then((response) => {
           if (response.status !== 200) {
+            console.log('here?')
             // Not valid
             throw new Error(response.data);
           }
@@ -89,6 +91,7 @@ export default function useTokenUpdate(): [boolean, boolean, string] {
         .catch(async ({message}) => {
           if (refreshToken) {
             try {
+              console.log(refreshToken, 'sadsad')
               return await restoreToken(refreshToken);
             } catch (e) {
               console.info(e.message);

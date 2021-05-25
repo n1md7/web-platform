@@ -1,0 +1,26 @@
+{
+  "name": "webplatform",
+  "version": "1.0.0",
+  "description": "webplatform",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "server:start": "npm run dev --prefix server",
+    "server:test": "npm run test --prefix app",
+    "react:start": "npm run start --prefix app",
+    "react:test": "npm run test --prefix app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FreedomRow/webPlatform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FreedomRow/webPlatform/issues"
+  },
+  "homepage": "https://github.com/FreedomRow/webPlatform#readme"
+}

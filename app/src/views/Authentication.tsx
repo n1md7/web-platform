@@ -1,33 +1,40 @@
-import useInputChange from "../hooks/useChange";
 import React, {FormEvent, useEffect, useState} from "react";
-import useAuthenticate from "../hooks/useAuthenticate";
 import {useHistory} from "react-router";
-import Alert, {AlertType} from "../components/Alert";
 import {Link} from "react-router-dom";
+import Alert, {AlertType} from "../components/Alert";
+import useAuthenticate from "../hooks/useAuthenticate";
+import useInputChange from "../hooks/useChange";
 import logo from "../img/logo.png";
 
 export default function Authentication() {
-  const [username, setUsername] = useInputChange('');
+  const [email, setEmail] = useInputChange('');
   const [password, setPassword] = useInputChange('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [authHandler, isOk, authError, responseModified] = useAuthenticate();
+  const [authHandler, isOk, authError, responseModified, resetError] = useAuthenticate();
   const history = useHistory();
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    authHandler({username, password, rememberMe});
+    authHandler({email, password, rememberMe});
   };
 
   const rememberMeHandler = (event: FormEvent<HTMLInputElement>) => {
+    console.log(event.currentTarget.checked)
     setRememberMe(event.currentTarget.checked);
   }
 
   useEffect(() => {
+    console.log({authError})
     if (isOk) {
       Alert('You have logged in successfully!');
       history.push('/');
     }
-    authError && Alert(authError, AlertType.ERROR);
+    if (authError) {
+      Alert(authError.message, AlertType.ERROR);
+      resetError(resetError);
+      // Todo: show error messages for individual fields
+      console.log(authError);
+    }
   }, [responseModified]);
 
   return (
@@ -41,9 +48,9 @@ export default function Authentication() {
           <h3 className="my-3 text-center">User Authentication</h3>
           <form onSubmit={onSubmit}>
             <div className="form-group">
-              <input minLength={5} onChange={setUsername} className="form-control"
-                     placeholder="Username"/>
-              <small className="form-text text-muted">Enter your username</small>
+              <input minLength={5} onChange={setEmail} className="form-control"
+                     placeholder="E-mail"/>
+              <small className="form-text text-muted">Enter your email address</small>
             </div>
             <div className="form-group">
               <input minLength={8} onChange={setPassword} type="password"

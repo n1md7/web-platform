@@ -15,3 +15,17 @@ export enum UserRole {
   admin
 }
 
+export type JoyError = {
+  message: string,
+  details: Array<{
+    message: string,
+    context: {
+      valids?: Array<string>,
+      label: string,
+      value: string,
+      key: string
+    },
+    type?: string,
+    path?: Array<string>
+  }>
+};

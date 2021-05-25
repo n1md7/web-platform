@@ -1,11 +1,11 @@
-import {useState} from "react";
-import store, {actionUpdate} from "../services/TokenStore";
-import {httpClient} from '../services/HttpClient';
 import {AxiosResponse} from 'axios';
-import {Token} from '../types';
+import {useState} from "react";
+import {httpClient} from '../services/HttpClient';
+import store, {actionUpdate} from "../services/TokenStore";
+import {JoyError, Token} from '../types';
 
 type Auth = {
-  username: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 };
@@ -14,14 +14,16 @@ export type AuthResponseType = {
   refreshToken: string,
   jwt: string
 }
-export default function useAuthenticate(): [(payload: Auth) => void, boolean, string, number] {
+export default function useAuthenticate(): [(payload: Auth) => void, boolean, JoyError | null, number, Function] {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<JoyError | null>(null);
   const [counter, setCounter] = useState<number>(0);
+
+  const resetError = () => setError(null);
 
   const authenticationHandler = (payload: Auth) => {
     httpClient
-      .post<AxiosResponse, AxiosResponse<string | AuthResponseType>>('v1/user/auth', payload)
+      .post<AxiosResponse, AxiosResponse<JoyError | AuthResponseType>>('v1/user/auth', payload)
       .then((response) => {
         if (response.status === 200) {
           setIsAuth(true);
@@ -31,11 +33,9 @@ export default function useAuthenticate(): [(payload: Auth) => void, boolean, st
           // Save tokens in localStorage
           localStorage.setItem(Token.jwt, response.data.jwt);
           localStorage.setItem(Token.refresh, response.data.refreshToken);
-          setError("");
-        } else if (response.status === 400) {
-          setError(response.data as string);
+          setError(null);
         } else {
-          setError("Incorrect username or password");
+          setError(response.data as JoyError);
         }
       })
       .catch(({message}) => {
@@ -47,5 +47,5 @@ export default function useAuthenticate(): [(payload: Auth) => void, boolean, st
       });
   }
 
-  return [authenticationHandler, isAuth, error, counter];
+  return [authenticationHandler, isAuth, error, counter, resetError];
 };
