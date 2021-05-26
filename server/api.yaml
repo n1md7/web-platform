@@ -1079,7 +1079,7 @@ responses:
   400:
     description: Validation Error | Bad Request
     schema:
-        $ref: '#/definitions/JoyError'
+      $ref: '#/definitions/JoyError'
   401:
     description: Unauthorized
     schema:
