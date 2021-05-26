@@ -1,4 +1,4 @@
-# Template for Koa.js
+Node.js version required ^15
 
 ## Start database
 

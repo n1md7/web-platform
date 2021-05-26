@@ -171,11 +171,7 @@ class UserController extends Controller {
 
     const user: UserType = await UserService.credentialsAreValid(validated);
     if (!user) {
-      throw new ExposeError(UserController.composeJoyErrorDetails([{
-          message: 'Incorrect credentials',
-          key: '',
-          value: ''
-        }]), {
+      throw new ExposeError(UserController.composeJoyErrorDetails([]), {
           exceptionMessage: 'Incorrect credentials',
           status: HttpCode.unauthorized
         }

@@ -3,19 +3,31 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import {ToastContainer} from 'react-toastify';
 import {BrowserRouter} from 'react-router-dom';
+import { ChakraProvider, extendTheme} from "@chakra-ui/react";
 import {Provider} from 'react-redux';
 import store from './redux/store';
 import App from './App';
 import './index.css';
 
+const colors = {
+  brand: {
+    900: "#1a365d",
+    800: "#153e75",
+    700: "#2a69ac",
+  },
+};
+const theme = extendTheme({ colors });
+
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App/>
-        <ToastContainer/>
-      </BrowserRouter>
-    </Provider>
+    <ChakraProvider theme={theme}>
+      <Provider store={store}>
+        <BrowserRouter>
+          <App/>
+          <ToastContainer/>
+        </BrowserRouter>
+      </Provider>
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

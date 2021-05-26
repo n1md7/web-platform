@@ -11,8 +11,10 @@ export type UserType = {
 }
 
 export enum UserRole {
-  basic = 1,
-  admin
+  user = 'user',
+  supplier = 'supplier',
+  admin = 'admin',
+  bot = 'bot'
 }
 
 export type JoyError = {

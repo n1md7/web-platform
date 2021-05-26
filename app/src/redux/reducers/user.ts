@@ -14,7 +14,7 @@ const defaultState: UserType = {
   id: -1,
   email: '',
   username: '',
-  role: UserRole.basic,
+  role: UserRole.user,
 };
 
 const userInfo = (state: UserType = defaultState, action: UserActionType) => {
