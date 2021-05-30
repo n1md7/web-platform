@@ -1,33 +1,33 @@
 version: '3.8'
 services:
-  mongo:
-    container_name: mongo-db-freedom
-    image: mongo
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: koa
-    ports:
-      - 27027:27017
-    volumes:
-      - "./server/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
-      - "mongo-data:/data/db"
-    networks:
-      - mongo-net
-  mongo-express:
-    container_name: mongo-express-freedom
-    depends_on:
-      - mongo
-    image: mongo-express
-    restart: unless-stopped
-    ports:
-      - 8800:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: secret
-    networks:
-      - mongo-net
+#  mongo:
+#    container_name: mongo-db-freedom
+#    image: mongo
+#    restart: unless-stopped
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: secret
+#      MONGO_INITDB_DATABASE: koa
+#    ports:
+#      - 27027:27017
+#    volumes:
+#      - "./server/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
+#      - "mongo-data:/data/db"
+#    networks:
+#      - mongo-net
+#  mongo-express:
+#    container_name: mongo-express-freedom
+#    depends_on:
+#      - mongo
+#    image: mongo-express
+#    restart: unless-stopped
+#    ports:
+#      - 8800:8081
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: secret
+#    networks:
+#      - mongo-net
   mysql:
     container_name: mysql-freedom
     image: 'mysql:8.0'
@@ -57,12 +57,12 @@ services:
     environment:
       PMA_HOST: mysql
 networks:
-  mongo-net:
-    driver: bridge
+#  mongo-net:
+#    driver: bridge
   mysql-net:
     driver: bridge
 volumes:
-  mongo-data:
-    driver: local
+#  mongo-data:
+#    driver: local
   mysql-data:
     driver: local
