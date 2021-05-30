@@ -3,7 +3,9 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
   Checkbox,
+  Image,
   List,
   ListIcon,
   ListItem,
@@ -15,6 +17,7 @@ import {Link} from "react-router-dom";
 import Alert from "../components/Alert";
 import useAuthenticate from "../hooks/useAuthenticate";
 import useInputChange from "../hooks/useChange";
+import freedomLogo from '../img/freedom.svg';
 import {JoyError} from "../types";
 
 export default function Authentication() {
@@ -79,6 +82,9 @@ export default function Authentication() {
         )
       }
       <div className="container">
+        <Box boxSize="sm" d="flex" alignItems="center" m="auto" h="auto" mt="32px">
+          <Image align={'center'} src={freedomLogo} alt="Segun Adebayo" height={'100px'}/>
+        </Box>
         <div className="row mt-5 justify-content-center">
           <div className="col-md-5">
             <h3 className="my-3 text-center">User Authentication</h3>

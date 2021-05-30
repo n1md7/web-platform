@@ -5,7 +5,6 @@ import Authentication from './views/Authentication';
 import Main from './views/Main';
 import Registration from './views/Registration';
 import UserSignOut from './components/UserSignOut';
-import './App.scss';
 
 function App() {
 
