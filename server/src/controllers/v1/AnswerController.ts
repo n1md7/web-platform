@@ -17,6 +17,7 @@ class AnswerController extends Controller {
     const validated = AnswerController.assert<AnswerReqType>(bodySchema, ctx.request.body);
 
     await AnswerModel.create({
+      userId: ctx.store.userId,
       questionId: validated.questionId,
       text: validated.text,
       status: AnswerStatus.active

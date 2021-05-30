@@ -1295,7 +1295,7 @@ definitions:
   Authentication:
     type: string
     format: JWT
-    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJiYXNpYyIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIwOTQzNzY5LCJleHAiOjI4MjA5NDM3Njl9.yW5cwC_sOlQwWtJKIcReFX17YPwZG3OeO1MzA-hGbjY
+    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYi5rb2R1YUBnbWFpbC5jb20iLCJpYXQiOjE2MjIzOTkyMzQsImV4cCI6MjgyMjM5OTIzNH0.4CLKX4HmZFMPqzg0rMRyF1BPRSEq8uXYU7rWjfDI1vw
   Error:
     type: string
     example: Internal Server Error
