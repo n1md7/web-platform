@@ -48,13 +48,19 @@ export const CreateUserSchema = Joi.object({
   email: Joi.string().min(6).max(128).required().label('E-mail'),
   role: Joi.string().valid(UserRole.user, UserRole.supplier).required().label('Role'),
   password: Joi.string().min(8).max(128).required().label('Password'),
-  confirmPassword: Joi.string().min(8).max(128).required().label('ConfirmPassword'),
+  confirmPassword: Joi.string().min(8).max(128).required().label('Confirm Password'),
 });
 
 export const AuthUserSchema = Joi.object({
   email: Joi.string().min(6).max(128).required().label('E-mail'),
   password: Joi.string().min(8).max(128).required().label('Password'),
   rememberMe: Joi.boolean().optional().default(false).label('Remember me'),
+});
+
+export const ChangePasswordSchema = Joi.object({
+  currentPassword: Joi.string().min(8).max(128).required().label('Current Password'),
+  newPassword: Joi.string().min(8).max(128).required().label('New Password'),
+  confirmPassword: Joi.string().min(8).max(128).required().label('Confirm Password'),
 });
 
 type CreateUserSchemaType = {
@@ -68,6 +74,12 @@ export type AuthUserSchemaType = {
   email: string;
   password: string;
   rememberMe: boolean;
+}
+
+type ChangePasswordSchemaType = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 class UserController extends Controller {
@@ -246,6 +258,45 @@ class UserController extends Controller {
         }]
       }
     });
+  }
+
+  public async updatePassword(ctx: MyContext): Promise<void> {
+    const validated: ChangePasswordSchemaType = UserController.assert(ChangePasswordSchema, ctx.request.body);
+    const user = await UserModel.findByPk(ctx.store.userId);
+
+    if (!await StringUtils.hashCompare(validated.currentPassword, user.password)) {
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
+          message: "Current password is incorrect",
+          key: 'currentPassword',
+          value: validated.currentPassword
+        }])
+      );
+    }
+
+    if (validated.newPassword !== validated.confirmPassword) {
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
+          message: null,
+          key: 'newPassword',
+          value: validated.newPassword
+        }, {
+          message: null,
+          key: 'confirmPassword',
+          value: validated.confirmPassword
+        }]), {
+          exceptionMessage: "New password field values did not match"
+        }
+      );
+    }
+
+    const newPasswordHash = await StringUtils.hashPassword(validated.newPassword);
+    await UserModel.update({password: newPasswordHash}, {
+      where: {
+        id: user.id
+      }
+    });
+
+    ctx.status = HttpCode.accepted;
+
   }
 }
 
