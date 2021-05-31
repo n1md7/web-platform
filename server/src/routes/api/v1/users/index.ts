@@ -11,6 +11,7 @@ userRouter.get('/user/token/refresh', authValidator, UserController.refreshToken
 userRouter.get('/user/token/restore/:key', UserController.restoreExpiredToken);
 
 userRouter.put('/user/info', authValidator, UserInfoController.updateUserInfo);
+userRouter.put('/user/password', authValidator, UserController.updatePassword);
 
 userRouter.post('/user/new', UserController.createNewUser);
 userRouter.post('/user/auth', UserController.authenticateUser);
