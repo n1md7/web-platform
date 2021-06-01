@@ -1,13 +1,14 @@
 import Joi from 'joi';
-import JsonWebToken from 'jsonwebtoken';
 import {Context} from 'koa';
 import NodeCache from 'node-cache';
 import StringUtils from "../../helpers/StringUtils";
 import CountryModel from "../../models/CountryModel";
 import IndustryModel from "../../models/IndustryModel";
 import OrganisationModel from "../../models/OrganisationModel";
+import ResetPasswordTokenModel, {ResetPasswordTokenType, ResetTokenStatus} from "../../models/ResetPasswordTokenModel";
 import UserInfoModel from "../../models/UserInfoModel";
 import UserModel, {UserPlan, UserType} from "../../models/UserModel";
+import MailService from "../../services/MailService";
 import UserService from "../../services/UserService";
 import {HttpCode} from '../../types/errorHandler';
 import {MyContext} from '../../types/koa';
@@ -40,6 +41,12 @@ export type JwtPayload = {
   role: UserRole;
   email: string;
   userId: number;
+  iat?: number;
+  exp?: number;
+};
+
+export type PasswordResetClaims = {
+  email: string;
   iat?: number;
   exp?: number;
 };
@@ -83,21 +90,6 @@ type ChangePasswordSchemaType = {
 }
 
 class UserController extends Controller {
-  private static generateNewJWT(payload: JwtPayload): string {
-
-    return JsonWebToken.sign(
-      payload,
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      }
-    );
-  }
-
-  private static generateRefreshTokenString(): string {
-    return StringUtils.randomChars(128);
-  }
-
   // Provide user JWT expiration status
   public async status(ctx: MyContext): Promise<void> {
     const currentTimeSec = Math.ceil(new Date().valueOf() / 1000);
@@ -296,7 +288,124 @@ class UserController extends Controller {
     });
 
     ctx.status = HttpCode.accepted;
+  }
 
+  public async createResetPasswordLink(ctx: Context): Promise<void> {
+    const validated = UserController.assert<{ email: string }>(Joi.object({
+      email: Joi.string().min(5).max(128).required().label('E-mail address'),
+    }), ctx.request.body);
+
+    const activeUser = await UserModel.findOne({
+      where: {
+        email: validated.email,
+        status: UserStatus.active
+      }
+    });
+    if (!activeUser) {
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
+          message: "No user associated with this E-mail address",
+          key: 'email',
+          value: validated.email
+        }])
+      );
+    }
+
+    const existingResetToken = await ResetPasswordTokenModel.findOne({
+      where: {
+        email: validated.email,
+        status: ResetTokenStatus.active
+      }
+    });
+
+    if (existingResetToken) {
+      // Invalidate it first
+      await ResetPasswordTokenModel.update({status: ResetTokenStatus.invalidated}, {
+        where: {
+          email: validated.email,
+          status: ResetTokenStatus.active
+        }
+      });
+    }
+
+    const hash = StringUtils.randomChars(64);
+    // Insert new token
+    await ResetPasswordTokenModel.create({
+      email: validated.email,
+      token: hash,
+      status: ResetTokenStatus.active
+    });
+
+    const resetEndpoint = process.env.API_ENDPOINT || `http://localhost:3000`;
+    // Send email
+    await MailService.send({
+      to: validated.email,
+      subject: 'Password reset link',
+      text: `Here is the link to reset password: ${resetEndpoint}/password/reset/${hash}`,
+      html: `<h3>Here is the link to reset password: ${resetEndpoint}/password/reset/${hash}</h3>`
+    });
+
+    ctx.status = HttpCode.accepted;
+  }
+
+  public async resetPasswordByResetLink(ctx: Context): Promise<void> {
+    const validatedParams = UserController.assert<{ token: string }>(Joi.object({
+      token: Joi.string().length(64).required().label('Password reset token'),
+    }), ctx.params);
+    const validatedBody: {
+      newPassword: string;
+      confirmPassword: string;
+    } = UserController.assert(Joi.object({
+      newPassword: Joi.string().min(8).max(128).required().label('New Password'),
+      confirmPassword: Joi.string().min(8).max(128).required().label('Confirm Password'),
+    }), ctx.request.body);
+
+    const resetTokenExist: ResetPasswordTokenType = await ResetPasswordTokenModel.findOne({
+      where: {
+        token: validatedParams.token,
+        status: ResetTokenStatus.active
+      }
+    });
+
+    if (!resetTokenExist) {
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
+          message: "Reset token is invalid or it doesn't exist",
+          key: 'token',
+          value: validatedParams.token
+        }])
+      );
+    }
+
+    if (validatedBody.newPassword !== validatedBody.confirmPassword) {
+      throw new ExposeError(UserController.composeJoyErrorDetails([{
+          message: null,
+          key: 'newPassword',
+          value: validatedBody.newPassword
+        }, {
+          message: null,
+          key: 'confirmPassword',
+          value: validatedBody.confirmPassword
+        }]), {
+          exceptionMessage: "New password field values did not match"
+        }
+      );
+    }
+
+    const newPasswordHash = await StringUtils.hashPassword(validatedBody.newPassword);
+    // Update password value
+    await UserModel.update({password: newPasswordHash}, {
+      where: {
+        email: resetTokenExist.email
+      }
+    });
+    // Mark token as used
+    await ResetPasswordTokenModel.update({status: ResetTokenStatus.used}, {
+      where: {
+        email: resetTokenExist.email,
+        status: ResetTokenStatus.active
+      }
+    });
+
+    ctx.status = HttpCode.accepted;
   }
 }
 

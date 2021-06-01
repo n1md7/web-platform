@@ -233,6 +233,74 @@ paths:
           $ref: '#/responses/400'
         500:
           $ref: '#/responses/500'
+  /api/v1/user/reset:
+    post:
+      tags:
+        - Users
+      summary: "Create password reset link"
+      description: "Makes password reset request. Which will generate a record in DB. It will send E-mail to user with the reset link."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - email
+            properties:
+              email:
+                type: "string"
+                example: "username@email.com"
+      responses:
+        202:
+          description: "Operation has been accepted"
+        400:
+          $ref: '#/responses/400'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/user/forget-password/{token}:
+    put:
+      tags:
+        - Users
+      summary: "Reset password by reset link"
+      description: "Reset password by password reset link"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: path
+          name: token
+          description: Reset token
+          required: true
+          schema:
+            type: string
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - newPassword
+              - confirmPassword
+            properties:
+              newPassword:
+                type: "string"
+                example: "secret123"
+              confirmPassword:
+                type: "string"
+                example: "secret123"
+      responses:
+        202:
+          description: "Operation has been accepted"
+        400:
+          $ref: '#/responses/400'
+        500:
+          $ref: '#/responses/500'
 
   /api/v1/user/info:
     put:
