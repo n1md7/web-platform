@@ -4,7 +4,7 @@ import logWrite from '../logger';
 
 
 export type SendType = {
-  from: string;
+  from?: string;
   to: string;
   subject: string;
   text: string;
@@ -16,7 +16,7 @@ export default class MailService {
     const transporter = await mailTransporter;
     const mail = await transporter.sendMail({
       from: '"Fred Foo 👻" <foo@example.com>', // sender address
-      to: "b.kodua@gmail.com", // list of receivers
+      to: "someone@gmail.com", // list of receivers
       subject: "Hello ✔", // Subject line
       text: "Hello world?", // plain text body
       html: "<b>Hello world?</b>", // html body

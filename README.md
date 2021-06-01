@@ -21,7 +21,7 @@ npm install --prefix ./app
 
 ## Run migrations
 ```bash
-npm run mysql:migrations
+npm run migrations
 ```
 
 ## Start development

@@ -1,6 +1,8 @@
 import Joi, {NumberSchema, ObjectSchema, StringSchema} from "joi";
+import JsonWebToken from 'jsonwebtoken';
+import StringUtils from "../helpers/StringUtils";
 import {ErrorType, HttpCode} from "../types/errorHandler";
-import {UserRole} from "./v1/UserController";
+import {JwtPayload, UserRole} from "./v1/UserController";
 
 type Options = {
   status?: HttpCode,
@@ -75,5 +77,20 @@ export default abstract class Controller {
         }
       }
     }
+  }
+
+  protected static generateNewJWT<Claims = JwtPayload>(claims: Claims): string {
+
+    return JsonWebToken.sign(
+      claims,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    );
+  }
+
+  protected static generateRefreshTokenString(): string {
+    return StringUtils.randomChars(128);
   }
 }

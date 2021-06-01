@@ -12,8 +12,10 @@ userRouter.get('/user/token/restore/:key', UserController.restoreExpiredToken);
 
 userRouter.put('/user/info', authValidator, UserInfoController.updateUserInfo);
 userRouter.put('/user/password', authValidator, UserController.updatePassword);
+userRouter.put('/user/forget-password/:token', UserController.resetPasswordByResetLink);
 
 userRouter.post('/user/new', UserController.createNewUser);
 userRouter.post('/user/auth', UserController.authenticateUser);
+userRouter.post('/user/reset', UserController.createResetPasswordLink);
 
 export default userRouter;
