@@ -45,12 +45,6 @@ export type JwtPayload = {
   exp?: number;
 };
 
-export type PasswordResetClaims = {
-  email: string;
-  iat?: number;
-  exp?: number;
-};
-
 export const CreateUserSchema = Joi.object({
   email: Joi.string().min(6).max(128).required().label('E-mail'),
   role: Joi.string().valid(UserRole.user, UserRole.supplier).required().label('Role'),
