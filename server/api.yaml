@@ -53,6 +53,54 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+    put:
+      tags:
+        - Users
+      summary: "User status update"
+      description: "User status update. Allowed only for super-admin."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - userId
+              - status
+            properties:
+              userId:
+                description: ID of the user about to change the status
+                type: number
+                example: 1
+              status:
+                description: Status to assign
+                type: string
+                enum:
+                  - active
+                  - blocked
+                  - disabled
+                example: active
+      responses:
+        202:
+          description: "Accepted"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
+        500:
+          $ref: '#/responses/500'
   /api/v1/user/details:
     get:
       tags:
@@ -356,6 +404,57 @@ paths:
           $ref: '#/responses/401'
         500:
           $ref: '#/responses/500'
+  /api/v1/user/role:
+    put:
+      tags:
+        - Users
+      summary: "User role update"
+      description: "User role update. Allowed only for super-admin."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - userId
+              - role
+            properties:
+              userId:
+                description: ID of the user about to change the role
+                type: number
+                example: 1
+              role:
+                description: Role to assign
+                type: string
+                enum:
+                  - user
+                  - supplier
+                  - bot
+                  - admin
+                example: supplier
+      responses:
+        202:
+          description: "Accepted"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
+        500:
+          $ref: '#/responses/500'
+
 
   /api/v1/user/password:
     put:

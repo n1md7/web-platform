@@ -25,9 +25,26 @@ npm run migrations
 ```
 
 ## Start development
+
 ```bash
 npm run dev --prefix ./server
 npm run start --prefix ./app
+
+```
+
+## Generate super-admin
+
+Set env vars
+
+`KOA_SEEDER_PORT=8761`
+
+`SUPER_ADMIN_EMAIL=admin@freedomrow.co.uk`
+
+`SUPER_ADMIN_PASSWORD=Super-@dmin-123`
+
+```bash
+npm run factory:seeder
+npm run factory:seeder:win
 
 ```
 

@@ -22,7 +22,7 @@ import logWrite from './logger';
     koa.init();
     koa.startServer();
   } catch (error) {
-    logWrite.error(error.message || error.toString());
+    logWrite.error(JSON.stringify(error));
     process.exit(1);
   }
 })(new Server(config));

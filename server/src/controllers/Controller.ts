@@ -69,7 +69,7 @@ export default abstract class Controller {
       currentRole: (currentRole: UserRole) => {
         if (!allowedRoles.includes(currentRole)) {
           throw new ExposeError(Controller.composeJoyErrorDetails([{
-            message: 'Your user does not have permission to access this endpoint'
+            message: 'Your user does not have permission to access this endpoint',
           }]), {
             exceptionMessage: 'Access denied',
             status: HttpCode.forbidden
