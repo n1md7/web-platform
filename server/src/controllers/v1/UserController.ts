@@ -28,7 +28,8 @@ export enum UserRole {
   user = 'user',
   supplier = 'supplier',
   admin = 'admin',
-  bot = 'bot'
+  bot = 'bot',
+  superAdmin = 'super-admin'
 }
 
 export enum UserStatus {
@@ -126,24 +127,9 @@ class UserController extends Controller {
       );
     }
 
-    const resultRow = await UserModel.findOne({
-      where: {
-        email: validated.email
-      }
-    });
-
-    if (resultRow) {
-      throw new ExposeError(UserController.composeJoyErrorDetails([{
-          message: "E-mail address is already taken",
-          key: 'email',
-          value: validated.email
-        }])
-      );
-    }
-
     const passwordHash = await StringUtils.hashPassword(validated.password);
 
-    await UserModel.create({
+    await UserService.createNewUser({
       email: validated.email,
       password: passwordHash,
       role: UserRole.user,
@@ -398,6 +384,39 @@ class UserController extends Controller {
         status: ResetTokenStatus.active
       }
     });
+
+    ctx.status = HttpCode.accepted;
+  }
+
+  /**
+   * @summary - Changing user role is allowed only for super admins. Super admins cannot modify fellow super admins.
+   * Although, creating super-admins are pretty limited since they are created from seeders with special factory generators.
+   * @param ctx
+   */
+  public async updateRoleById(ctx: MyContext): Promise<void> {
+    const validatedBody: {
+      userId: number;
+      role: UserRole;
+    } = UserController.assert(Joi.object({
+      userId: Joi.number().positive().required().label('User ID'),
+      role: Joi.string().valid(UserRole.user, UserRole.bot, UserRole.supplier, UserRole.admin).required().label('User role'),
+    }), ctx.request.body);
+
+    await UserService.updateRoleById(validatedBody.userId, validatedBody.role);
+
+    ctx.status = HttpCode.accepted;
+  }
+
+  public async updateStatusById(ctx: MyContext): Promise<void> {
+    const validatedBody: {
+      userId: number;
+      status: UserStatus;
+    } = UserController.assert(Joi.object({
+      userId: Joi.number().positive().required().label('User ID'),
+      status: Joi.string().valid(UserStatus.active, UserStatus.blocked, UserStatus.disabled).required().label('User status'),
+    }), ctx.request.body);
+
+    await UserService.updateStatusById(validatedBody.userId, validatedBody.status);
 
     ctx.status = HttpCode.accepted;
   }

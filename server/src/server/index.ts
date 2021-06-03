@@ -1,20 +1,20 @@
-import Koa from "koa";
-import serve from "koa-static";
-import bodyParser from "koa-bodyparser";
 import cors from "@koa/cors";
-import logWrite from "../logger";
-import routes from "../routes";
-import handleErrors from "../middlewares/ErrorHandler";
-import {Env} from "../types";
-import {ConfigOptions} from "../types/config";
-import path from "path";
 import http, {Server as HttpServer} from "http";
+import Koa from "koa";
+import bodyParser from "koa-bodyparser";
+import serve from "koa-static";
+import path from "path";
 import SocketIO, {Server as SocketIoServer} from "socket.io"
-import SocketModule from "../socket";
-import serveIndexHTML from '../middlewares/serveIndexHTML';
-import handleApiNotFound from '../middlewares/handleApiNotFound';
 import swagger, {loadDocumentSync} from 'swagger2';
 import {ui} from "swagger2-koa";
+import logWrite from "../logger";
+import handleErrors from "../middlewares/ErrorHandler";
+import handleApiNotFound from '../middlewares/handleApiNotFound';
+import serveIndexHTML from '../middlewares/serveIndexHTML';
+import routes from "../routes";
+import SocketModule from "../socket";
+import {Env} from "../types";
+import {ConfigOptions} from "../types/config";
 
 export default class Server {
   koa: Koa;
@@ -96,9 +96,11 @@ export default class Server {
     const {port, hostname, swaggerContextPath} = this.config.server;
 
     return this.httpServer.listen(port, hostname, () => {
-      logWrite.debug(`Health-check - http://localhost:${port}/health-check`);
-      logWrite.debug(`Swagger UI - http://localhost:${port}${swaggerContextPath}`);
-      logWrite.debug('Server (re)started!');
+      if (process.env.NODE_ENV?.trim() !== 'factory-seeder') {
+        logWrite.debug(`Health-check - http://localhost:${port}/health-check`);
+        logWrite.debug(`Swagger UI - http://localhost:${port}${swaggerContextPath}`);
+        logWrite.debug('Server (re)started!');
+      }
     });
   }
 }

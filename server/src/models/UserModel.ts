@@ -13,15 +13,18 @@ import {UserRole, UserStatus} from "../controllers/v1/UserController";
 import AssessmentModel from "./AssessmentModel";
 import UserInfoModel from "./UserInfoModel";
 
-export type UserType = {
-  id: number;
+export type UserCreateType = {
   password: string;
   email: string;
   role: UserRole;
   status: UserStatus;
   plan: UserPlan;
-  createdAt: Date;
-  updatedAt: Date;
+};
+
+export type UserType = UserCreateType & {
+  id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export enum UserPlan {

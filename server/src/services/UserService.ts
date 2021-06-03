@@ -1,6 +1,8 @@
-import {AuthUserSchemaType} from "../controllers/v1/UserController";
+import {Op} from "sequelize";
+import Controller, {ExposeError} from "../controllers/Controller";
+import {AuthUserSchemaType, UserRole, UserStatus} from "../controllers/v1/UserController";
 import StringUtils from "../helpers/StringUtils";
-import UserModel, {UserType} from "../models/UserModel";
+import UserModel, {UserCreateType, UserType} from "../models/UserModel";
 
 export default class UserService {
   /**
@@ -35,5 +37,68 @@ export default class UserService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     } as UserType;
+  }
+
+  /**
+   * @summary Updates any role - except superAdmin
+   * @param id {number}
+   * @param role {UserRole}
+   * @returns Boolean
+   */
+  public static async updateRoleById(id: number, role: UserRole): Promise<boolean> {
+    const [updateCount] = await UserModel.update({role}, {
+      where: {
+        id,
+        role: {
+          [Op.not]: UserRole.superAdmin
+        }
+      }
+    });
+
+    return Boolean(updateCount);
+  }
+
+  /**
+   * @summary Updates any user status - except for superAdmin
+   * @param id {number}
+   * @param status {UserRole}
+   * @returns Boolean
+   */
+  public static async updateStatusById(id: number, status: UserStatus): Promise<boolean> {
+    const [updateCount] = await UserModel.update({status}, {
+      where: {
+        id,
+        role: {
+          [Op.not]: UserRole.superAdmin
+        }
+      }
+    });
+
+    return Boolean(updateCount);
+  }
+
+  /**
+   * @summary - Creates a new user. Validates by E-mail whether or not its unique
+   * @param user {UserCreateType}
+   * @throws Error
+   * @returns UserType
+   */
+  public static async createNewUser(user: UserCreateType): Promise<UserType> {
+    const userInDb = await UserModel.findOne({
+      where: {
+        email: user.email
+      }
+    });
+
+    if (userInDb) {
+      throw new ExposeError(Controller.composeJoyErrorDetails([{
+          message: "E-mail address is already taken",
+          key: 'email',
+          value: user.email
+        }])
+      );
+    }
+
+    return UserModel.create(user);
   }
 }
