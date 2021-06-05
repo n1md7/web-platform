@@ -23,7 +23,9 @@
     "sequelize": "npx sequelize",
     "info": "npx sequelize --help && echo '\nPlease visit https://sequelize.org/master/manual/migrations.html'",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "factory:seeder": "export NODE_ENV=factory-seeder && ts-node-dev src/factory/seeders/index.ts",
+    "factory:seeder:win": "set NODE_ENV=factory-seeder && ts-node-dev src/factory/seeders/index.ts"
   },
   "keywords": [
     "koa",
