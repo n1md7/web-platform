@@ -141,18 +141,18 @@ paths:
     post:
       tags:
         - Users
-      summary: "User registration"
-      description: "Creates new user"
+      summary: User registration
+      description: Creates new user
       consumes:
         - "application/json"
       produces:
         - "application/json"
       parameters:
-        - in: "body"
-          name: "body"
+        - in: body
+          name: body
           required: true
           schema:
-            type: "object"
+            type: object
             required:
               - email
               - password
@@ -160,20 +160,20 @@ paths:
               - role
             properties:
               email:
-                type: "string"
-                example: "username@email.com"
+                type: string
+                example: username@email.com
               role:
                 type: string
                 enum:
-                  - basic
+                  - user
                   - supplier
-                example: "user"
+                example: supplier
               password:
-                type: "string"
-                example: "secret123"
+                type: string
+                example: secret123
               confirmPassword:
-                type: "string"
-                example: "secret123"
+                type: string
+                example: secret123
       responses:
         201:
           description: Created
