@@ -23,13 +23,15 @@ type AssessmentType = {
 class AssessmentController extends Controller {
   public async createNewTemplate(ctx: MyContext): Promise<void> {
     const validated = AssessmentController.assert<AssessmentType>(CreateAssessmentSchema, ctx.request.body);
-
+    // ToDo: Organisation value check. When empty should not be able to perform any actions
     const template = await TemplateService.getTemplateDetailsById(validated.templateId);
     // Create assessment
     const assessment = await AssessmentModel.create({
       userId: ctx.store.userId,
       templateId: template.id,
       name: template.name,
+      organisationId: ctx.user.userInfo?.organisationId,
+      createdBy: ctx.store.userId,
       status: TemplateStatus.active
     });
     // Create groups
@@ -66,7 +68,7 @@ class AssessmentController extends Controller {
   public async getAssessmentDetails(ctx: MyContext): Promise<void> {
     ctx.body = await AssessmentModel.findAll({
       where: {
-        // Get data only associated with auth user
+        // Get data only associated with auth user company
         userId: ctx.store.userId
       },
       attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],

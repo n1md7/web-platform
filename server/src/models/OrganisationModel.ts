@@ -1,4 +1,5 @@
-import {AutoIncrement, BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {AutoIncrement, BelongsTo, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import AssessmentModel from "./AssessmentModel";
 import CountryModel from "./CountryModel";
 import IndustryModel from "./IndustryModel";
 
@@ -96,4 +97,7 @@ export default class OrganisationModel extends Model {
 
   @BelongsTo(() => CountryModel)
   country?: CountryModel
+
+  @HasMany(() => AssessmentModel)
+  assessments?: AssessmentModel
 }

@@ -12,7 +12,11 @@ module.exports = {
         type: Sequelize.INTEGER(11),
         allowNull: false
       },
-      userId: {
+      createdBy: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+      },
+      organisationId: {
         type: Sequelize.INTEGER(11),
         allowNull: false
       },
