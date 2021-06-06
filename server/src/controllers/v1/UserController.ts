@@ -29,7 +29,8 @@ export enum UserRole {
   supplier = 'supplier',
   admin = 'admin',
   bot = 'bot',
-  superAdmin = 'super-admin'
+  superAdmin = 'super-admin',
+  companyManager = 'company-manager'
 }
 
 export enum UserStatus {
@@ -132,7 +133,7 @@ class UserController extends Controller {
     await UserService.createNewUser({
       email: validated.email,
       password: passwordHash,
-      role: UserRole.user,
+      role: validated.role,
       status: UserStatus.active,
       plan: UserPlan.free
     });

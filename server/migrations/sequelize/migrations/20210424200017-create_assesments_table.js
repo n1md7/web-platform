@@ -41,7 +41,7 @@ module.exports = {
       collate: 'utf8_general_ci'
     });
 
-    await queryInterface.addIndex('assessments', ['templateId', 'userId']);
+    await queryInterface.addIndex('assessments', ['templateId', 'createdBy']);
   },
 
   down: async (queryInterface, Sequelize) => {

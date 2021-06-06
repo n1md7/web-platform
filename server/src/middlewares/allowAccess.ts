@@ -10,7 +10,7 @@ type AllowAccess = {
 export default function (rolesAllowed: UserRole[]): AllowAccess {
   return async (ctx, next) => {
     // When invalid current role => it will throw and error
-    Controller.allowed(rolesAllowed).currentRole(ctx.store.role);
+    Controller.allowed(rolesAllowed).currentRole(ctx.store?.role);
     await next();
   }
 }

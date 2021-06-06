@@ -1,9 +1,11 @@
 import JsonWebToken from "jsonwebtoken";
 import {Context, Next} from 'koa';
 import NodeCache from "node-cache";
+import Controller, {ExposeError} from "../controllers/Controller";
 import {JwtPayload} from '../controllers/v1/UserController';
 import UserInfoModel from "../models/UserInfoModel";
 import UserModel from "../models/UserModel";
+import {HttpCode} from "../types/errorHandler";
 
 export const usersInfoCache = new NodeCache({
     checkperiod: 0
@@ -25,6 +27,16 @@ export default async function authValidator(ctx: Context, next: Next): Promise<v
                 model: UserInfoModel
             }
         });
+        if (!user) {
+            throw new ExposeError(Controller.composeJoyErrorDetails([{
+                message: 'User does not exist',
+                key: 'email',
+                value: claims.email
+            }]), {
+                exceptionMessage: 'Access denied',
+                status: HttpCode.forbidden
+            });
+        }
         usersInfoCache.set(claims.email, {
             id: user.id,
             email: user.email,

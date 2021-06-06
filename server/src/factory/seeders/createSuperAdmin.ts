@@ -4,7 +4,7 @@ import {UserPlan, UserType} from "../../models/UserModel";
 import UserService from "../../services/UserService";
 
 export default async function createSuperAdmin(): Promise<UserType> {
-  const password = process.env.SUPER_ADMIN_PASSWORD || 'Super-@dmin-123';
+  const password = process.env.SUPER_ADMIN_PASSWORD || 'super-admin-123';
 
   return UserService.createNewUser({
     email: process.env.SUPER_ADMIN_EMAIL || 'admin@freedomrow.co.uk',

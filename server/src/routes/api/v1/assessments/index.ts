@@ -9,7 +9,7 @@ assessmentRouter.get('/assessments', authValidator, AssessmentController.getAsse
 assessmentRouter.get('/assessment/details', authValidator, AssessmentController.getAssessmentDetails);
 assessmentRouter.get('/assessment/details/:assessmentId', authValidator, AssessmentController.getAssessmentDetailsById);
 
-assessmentRouter.post('/assessment/new', authValidator, AssessmentController.createNewTemplate);
+assessmentRouter.post('/assessment/new', authValidator, AssessmentController.create);
 assessmentRouter.post('/assessment/answer', authValidator, AnswerController.createNewAnswer);
 
 export default assessmentRouter;

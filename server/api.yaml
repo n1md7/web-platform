@@ -20,12 +20,136 @@ tags:
     description: Assessment related actions
   - name: File actions
     description: File upload/download related actions
+  - name: Organisation
+    description: Organisation related actions
   - name: Version
     description: App version
   - name: Info
     description: App information related actions
 
 paths:
+  /api/v1/organisation/{id}:
+    get:
+      tags:
+        - Organisation
+      summary: "Create organisation"
+      description: "Create a new organisation. Allowed for Company manager and admin roles"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: path
+          name: id
+          description: Organisation ID
+          required: true
+          schema:
+            type: number
+            example: 1
+      responses:
+        201:
+          description: "Created"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
+        500:
+          $ref: '#/responses/500'
+  /api/v1/organisation:
+    post:
+      tags:
+        - Organisation
+      summary: "Create organisation"
+      description: "Create a new organisation. Allowed for Comany manager and admin roles"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication JWT header
+          required: true
+          schema:
+            $ref: "#/definitions/Authentication"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - name
+              - countryId
+              - industryId
+              - registeredNumber
+              - size
+              - entityType
+            properties:
+              name:
+                description: Company name
+                type: string
+                example: Badass Company
+              countryId:
+                type: number
+                example: 1
+              industryId:
+                type: number
+                example: 1
+              registeredNumber:
+                type: string
+                example: '0135232BASS3QWE'
+              size:
+                type: string
+                enum:
+                  - Large
+                  - Medium
+                  - Small
+                  - Micro
+                example: Medium
+              entityType:
+                type: string
+                enum:
+                  - Individual
+                  - Student
+                  - LLC
+                  - LLP
+                  - Charity
+                  - Government
+                  - Other
+              website:
+                type: string
+                example: www.example.com
+              street:
+                type: string
+                example: Street 1
+              cityOrTown:
+                type: string
+                example: Tallinn
+              countryOrState:
+                type: string
+                example: Estonia
+              postCode:
+                type: string
+                example: PE12345
+      responses:
+        201:
+          description: "Created"
+        400:
+          $ref: '#/responses/400'
+        401:
+          $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
+        500:
+          $ref: '#/responses/500'
   /api/v1/user/status:
     get:
       tags:
@@ -377,7 +501,6 @@ paths:
               - lastName
               - middleName
               - dateOfBirth
-              - organisationId
             properties:
               firstName:
                 type: string
@@ -392,9 +515,6 @@ paths:
                 type: string
                 description: ISO string date
                 example: 2011-10-05T14:48:00.000Z
-              organisationId:
-                type: number
-                example: 1
       responses:
         202:
           description: "Accepted"
@@ -1054,6 +1174,8 @@ paths:
           $ref: '#/responses/400'
         401:
           $ref: '#/responses/401'
+        403:
+          $ref: '#/responses/403'
         500:
           $ref: '#/responses/500'
   /api/v1/assessment/answer:
@@ -1508,7 +1630,7 @@ definitions:
   Authentication:
     type: string
     format: JWT
-    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYi5rb2R1YUBnbWFpbC5jb20iLCJpYXQiOjE2MjIzOTkyMzQsImV4cCI6MjgyMjM5OTIzNH0.4CLKX4HmZFMPqzg0rMRyF1BPRSEq8uXYU7rWjfDI1vw
+    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoidXNlcm5hbWVAZW1haWwuY29tIiwiaWF0IjoxNjIzMDAxNjk5LCJleHAiOjI4MjMwMDE2OTl9.t5xzOqW2J3NkvckOqsjIyEZ5nKd5yo30CvdpLvyAswc
   Error:
     type: string
     example: Internal Server Error
