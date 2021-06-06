@@ -11,14 +11,12 @@ class UserInfoController extends Controller {
       middleName: string;
       lastName: string;
       dateOfBirth: string;
-      organisationId: number;
     };
     const bodySchema = Joi.object({
       firstName: Joi.string().max(32).label('First name'),
       middleName: Joi.string().max(32).label('Middle name'),
       lastName: Joi.string().max(32).label('Last name'),
       dateOfBirth: Joi.string().isoDate().label('Date of birth'),
-      organisationId: Joi.number().label('Organisation id'),
     });
     const validated = UserInfoController.assert<AnswerReqType>(bodySchema, ctx.request.body);
 
@@ -28,7 +26,6 @@ class UserInfoController extends Controller {
       middleName: validated.middleName,
       lastName: validated.lastName,
       dateOfBirth: validated.dateOfBirth,
-      organisationId: validated.organisationId
     });
 
     ctx.status = HttpCode.accepted;

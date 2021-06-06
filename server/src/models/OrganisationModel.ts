@@ -1,4 +1,5 @@
-import {AutoIncrement, BelongsTo, Column, ForeignKey, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import {AutoIncrement, BelongsTo, Column, ForeignKey, HasMany, Model, PrimaryKey, Table,} from 'sequelize-typescript';
+import AssessmentModel from "./AssessmentModel";
 import CountryModel from "./CountryModel";
 import IndustryModel from "./IndustryModel";
 
@@ -32,12 +33,13 @@ export type OrganisationType = {
   website: string;
   entityType: EntityType;
   industryId: number;
-  registeredNumber: number;
+  registeredNumber: string;
   street: string;
   cityOrTown: string;
   countryOrState: string;
-  postCode: number;
+  postCode: string;
   country: string;
+  createdBy: string;
   size: CompanySize;
   status: CompanyStatus;
   industry?: IndustryModel
@@ -78,6 +80,9 @@ export default class OrganisationModel extends Model {
   postCode: number;
 
   @Column
+  createdBy: number;
+
+  @Column
   size: CompanySize;
 
   @Column
@@ -96,4 +101,7 @@ export default class OrganisationModel extends Model {
 
   @BelongsTo(() => CountryModel)
   country?: CountryModel
+
+  @HasMany(() => AssessmentModel)
+  assessments?: AssessmentModel
 }

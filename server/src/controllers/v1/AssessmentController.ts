@@ -10,7 +10,7 @@ import {TemplateQuestionStatus} from "../../models/TemplateQuestionModel";
 import TemplateService from "../../services/TemplateService";
 import {HttpCode} from "../../types/errorHandler";
 import {MyContext} from "../../types/koa";
-import Controller from "../Controller";
+import Controller, {ExposeError} from "../Controller";
 
 export const CreateAssessmentSchema = Joi.object({
   templateId: Joi.number().positive().required().label('Template Id'),
@@ -21,15 +21,31 @@ type AssessmentType = {
 }
 
 class AssessmentController extends Controller {
-  public async createNewTemplate(ctx: MyContext): Promise<void> {
+  public async create(ctx: MyContext): Promise<void> {
     const validated = AssessmentController.assert<AssessmentType>(CreateAssessmentSchema, ctx.request.body);
-
+    if (!ctx.user.userInfo?.organisationId) {
+      throw new ExposeError(AssessmentController.composeJoyErrorDetails([{
+          message: 'You are not allowed to perform this action',
+        }]), {
+          status: HttpCode.forbidden
+        }
+      );
+    }
     const template = await TemplateService.getTemplateDetailsById(validated.templateId);
+    if (!template) {
+      throw new ExposeError(AssessmentController.composeJoyErrorDetails([]), {
+          status: HttpCode.badRequest,
+          exceptionMessage: 'Template not available'
+        }
+      );
+    }
     // Create assessment
     const assessment = await AssessmentModel.create({
       userId: ctx.store.userId,
       templateId: template.id,
       name: template.name,
+      organisationId: ctx.user.userInfo?.organisationId,
+      createdBy: ctx.store.userId,
       status: TemplateStatus.active
     });
     // Create groups
@@ -55,19 +71,37 @@ class AssessmentController extends Controller {
   }
 
   public async getAssessmentList(ctx: MyContext): Promise<void> {
+    if (!ctx.user.userInfo?.organisationId) {
+      throw new ExposeError(AssessmentController.composeJoyErrorDetails([{
+          message: 'You are not allowed to perform this action',
+        }]), {
+          status: HttpCode.forbidden
+        }
+      );
+    }
+
     ctx.body = await AssessmentModel.findAll({
       where: {
         status: TemplateStatus.active,
-        userId: ctx.store.userId,
+        organisationId: ctx.user.userInfo?.organisationId
       }
     });
   }
 
   public async getAssessmentDetails(ctx: MyContext): Promise<void> {
+    if (!ctx.user.userInfo?.organisationId) {
+      throw new ExposeError(AssessmentController.composeJoyErrorDetails([{
+          message: 'You are not allowed to perform this action',
+        }]), {
+          status: HttpCode.forbidden
+        }
+      );
+    }
+
     ctx.body = await AssessmentModel.findAll({
       where: {
-        // Get data only associated with auth user
-        userId: ctx.store.userId
+        // Get data only associated with auth user company
+        organisationId: ctx.user.userInfo?.organisationId
       },
       attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
       include: {
@@ -104,11 +138,19 @@ class AssessmentController extends Controller {
       assessmentId: Joi.number().positive().label('Assessment ID'),
     });
     const validated = AssessmentController.assert<AssessmentReqType>(bodySchema, ctx.params);
+    if (!ctx.user.userInfo?.organisationId) {
+      throw new ExposeError(AssessmentController.composeJoyErrorDetails([{
+          message: 'You are not allowed to perform this action',
+        }]), {
+          status: HttpCode.forbidden
+        }
+      );
+    }
 
     ctx.body = await AssessmentModel.findOne({
       where: {
         id: validated.assessmentId,
-        userId: ctx.store.userId
+        organisationId: ctx.user.userInfo?.organisationId
       },
       attributes: ['id', 'name', 'status', 'createdAt', 'updatedAt'],
       include: {
