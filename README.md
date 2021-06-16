@@ -38,7 +38,7 @@ Set env vars
 
 `KOA_SEEDER_PORT=8761`
 
-`SUPER_ADMIN_EMAIL=admin@freedomrow.co.uk`
+`SUPER_ADMIN_EMAIL=admin@example.com`
 
 `SUPER_ADMIN_PASSWORD=Super-@dmin-123`
 

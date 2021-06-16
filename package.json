@@ -12,15 +12,7 @@
     "react:start": "npm run start --prefix app",
     "react:test": "npm run test --prefix app"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FreedomRow/webPlatform.git"
-  },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/FreedomRow/webPlatform/issues"
-  },
-  "homepage": "https://github.com/FreedomRow/webPlatform#readme"
+  "author": "Harry Kodua",
+  "license": "ISC"
 }

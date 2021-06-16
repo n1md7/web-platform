@@ -6,7 +6,7 @@ import {NavLink} from "react-router-dom";
 const Sidebar = () => {
   return (
     <div className=" border-right" id="sidebar-wrapper">
-      <div className="sidebar-heading">FREEDOM ROW</div>
+      <div className="sidebar-heading">Company name</div>
       <div className="list-group list-group-flush">
         <NavLink to="/dashboard" className="list-group-item">
           <Box d={'flex'} alignItems={'center'}>

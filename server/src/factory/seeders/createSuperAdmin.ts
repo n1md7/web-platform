@@ -7,7 +7,7 @@ export default async function createSuperAdmin(): Promise<UserType> {
   const password = process.env.SUPER_ADMIN_PASSWORD || 'super-admin-123';
 
   return UserService.createNewUser({
-    email: process.env.SUPER_ADMIN_EMAIL || 'admin@freedomrow.co.uk',
+    email: process.env.SUPER_ADMIN_EMAIL || 'admin@example.com',
     role: UserRole.superAdmin,
     status: UserStatus.active,
     plan: UserPlan.premium,
